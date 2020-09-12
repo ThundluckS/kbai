@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.2.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 300 100" style="enable-background:new 0 0 300 100;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#06754B;}
+	.st1{fill:#FFFFFF;}
+	.st2{font-family:'ArialMT';}
+	.st3{font-size:21px;}
+</style>
+<path class="st0" d="M290,100H10c-5.5,0-10-4.5-10-10V10C0,4.5,4.5,0,10,0h280c5.5,0,10,4.5,10,10v80C300,95.5,295.5,100,290,100z"
+	/>
+<text transform="matrix(1 0 0 1 130.7432 35.039)" class="st1 st2 st3">Test</text>
+<path class="st1" d="M157.9,60.1c0.5,0.5,0.5,1.4,0,2l-9.3,9.3c-0.5,0.5-1.4,0.5-2,0l-4.4-4.4c-0.5-0.5-0.5-1.4,0-2
+	c0.5-0.5,1.4-0.5,2,0l3.4,3.4l8.3-8.3C156.5,59.5,157.3,59.5,157.9,60.1z M167.8,65.7c0,9.8-7.9,17.8-17.8,17.8s-17.8-7.9-17.8-17.8
+	S140.2,48,150,48C159.8,48,167.8,55.9,167.8,65.7z M165,65.7c0-8.3-6.7-15-15-15c-8.3,0-15,6.7-15,15c0,8.3,6.7,15,15,15
+	S165,74,165,65.7z"/>
+</svg>
