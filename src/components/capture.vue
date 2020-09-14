@@ -1,6 +1,6 @@
 <template>
 <div class="w-100 h-100">
-    <div class="vld-parent">
+    <div class="vld-parent main-panel">
         <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>    
         <div class="d-flex w-100 h-100 outer-wrap">
             <div class="d-flex flex-fill flex-column main-panel" style="background-color:white;">                

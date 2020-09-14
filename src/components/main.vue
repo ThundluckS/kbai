@@ -690,16 +690,26 @@ export default {
       this.gsImportProject();
     },
     gsImportProject: function () {
-      this.isLoading = true;
-      axiosInstance
-        .post("importFromGoogleDrive", {
-          projectName: this.gsSelectedProject,
-        })
-        .then((response) => {
-          console.log(response.data);
-          this.isLoading = false;
-          //this.isProjectLoaded = true
+      if (
+        this.$store.getters.getTrainingType !== "None" &&
+        this.getProjectDir !== "None"
+      ) {
+        this.$nextTick(() => {
+          this.$refs.openModal.hide();          
+          this.isLoading = true;
+          axiosInstance
+            .post("importFromGoogleDrive", {
+             projectName: this.gsSelectedProject,
+            })
+            .then((response) => {
+              console.log(response.data);
+              this.isLoading = false;
+              //this.isProjectLoaded = true
+            });  
         });
+      } else {
+        console.log("Training type is required.");
+      }            
     },
     handleProjectDelete: function (bvModalEvt) {
       if (this.deletingProject === null) {
