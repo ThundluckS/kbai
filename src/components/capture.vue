@@ -2,23 +2,24 @@
 <div class="w-100 h-100">
     <div class="vld-parent">
         <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>
-        <div class="d-flex w-100 h-100 outer-wrap">
-            <div class="d-flex flex-fill flex-column main-panel" style="background-color:white;">                
-                <div class="img-slider">
-                    <div :id="id" :class="{'img': true, 'active': imageActiveIndex === id }" v-for="(file, id) in images" :key="id" v-on:click="onSelect($event)">
-                        <img class="thumb" :src="file.file" alt="" srcset=""><img class="cancel-btn" src="../assets/UI/png/cancel.png" @click="deleteImage(id)" alt="" srcset="">
-                    </div>
-                </div>
-            </div>
-            <div class="side-panel" style="width:300px;">
-                <!-- <div class="center">
-                    <img @click="takePhoto" v-on:click.prevent class="camera-btn op-btn" src="../assets/UI/png/Group 116.png" height="128" alt="" srcset="" />                    
-                </div> -->
-                <div class="center">
-                    <img v-b-modal.modal-1  class="camera-btn op-btn" src="../assets/UI/png/Group 120.png" height="128" alt="" srcset="" />                                
+    </div>
+    <div class="d-flex w-100 h-100 outer-wrap">
+        <div class="d-flex flex-fill flex-column main-panel" style="background-color:white;">                
+            <div class="img-slider">
+                <div :id="id" :class="{'img': true, 'active': imageActiveIndex === id }" v-for="(file, id) in images" :key="id" v-on:click="onSelect($event)">
+                    <img class="thumb" :src="file.file" alt="" srcset=""><img class="cancel-btn" src="../assets/UI/png/cancel.png" @click="deleteImage(id)" alt="" srcset="">
                 </div>
             </div>
         </div>
+        <div class="side-panel" style="width:300px;">
+            <!-- <div class="center">
+                <img @click="takePhoto" v-on:click.prevent class="camera-btn op-btn" src="../assets/UI/png/Group 116.png" height="128" alt="" srcset="" />                    
+            </div> -->
+            <div class="center">
+                <img v-b-modal.modal-1  class="camera-btn op-btn" src="../assets/UI/png/Group 120.png" height="128" alt="" srcset="" />                                
+            </div>
+        </div>
+    </div>
         <b-modal ref="capture-modal" hide-footer title="Using Component Methods">
             <div class="d-block text-center">
                 <h3> New image has been captured!</h3>
@@ -33,7 +34,7 @@
                 <button v-on:click="submitFiles()" class="btn base-btn">Upload</button>
             </div>
         </b-modal>
-    </div>
+    
 </div>
 </template>
 
