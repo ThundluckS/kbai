@@ -1502,8 +1502,7 @@ ul {
 }
 
 .container-fluid {
-  padding: 0;
-  overflow-y: auto;
+  padding: 0;  
 }
 
 .main-bg {

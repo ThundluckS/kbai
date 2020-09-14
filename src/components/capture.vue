@@ -33,8 +33,8 @@
                 <button v-on:click="submitFiles()" class="btn base-btn">Upload</button>
             </div>
         </b-modal>
-
     </div>
+</div>
 </template>
 
 <script>
@@ -459,7 +459,7 @@ $primary-color: #007e4e;
     flex-wrap: wrap;
     width: 100%;
     height: 100%;
-    overflow-y: scroll;    
+    overflow-y: scroll;       
     position: relative;
     padding-top: 6px;
     padding-bottom: 6px;
