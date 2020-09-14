@@ -191,18 +191,22 @@
               <p>
                 เริ่มใช้งานโดยกด
                 <img
-                  src="../assets/UI/png/Group -2.png"
+                  src="../assets/UI/png/Group 105.png"
                   alt=""
                   srcset=""
-                />เพื่อทำการเลือก
-                <span class="p-color">Object Detection</span> หรือ
-                <span class="p-color">Image Classification</span
-                ><br /><br />ในกรณีที่เลือก
-                <span class="p-color">Object Detection</span>
-                กระบวนการสร้างโมเดล (Training) ทำบน Colab
-                จำเป็นต้องเชื่อมต่ออินเทอร์เน็ตให้เรียบร้อยก่อน<br /><br />ในกรณีที่เลือก
-                <span class="p-color">Image Classification</span>
-                กระบวนการสร้างโมเดล (Training) ทำบน KidBright AI
+                />เพื่อสร้างโปรเจคใหม่
+                <br /><br />ในกรณีที่มีโปรเจคอยู่แล้วให้กด
+                <img
+                  src="../assets/UI/png/Group 106.png"
+                  alt=""
+                  srcset=""
+                />เพื่อเปิดโปรเจคที่มีอยู่แล้ว
+                <br /><br />ในกรณีที่มีโปรเจคอยู่บน Google Drive ให้กด
+                <img
+                  src="../assets/UI/png/Group 121.png"
+                  alt=""
+                  srcset=""
+                />เพื่อนำเข้าข้อมูลจาก Google Drive ก่อน จึงกดเปิดโปรเจค
               </p>
             </div>
             <div class="mascot">
@@ -483,7 +487,7 @@
       </b-table>
     </b-modal>
 
-    <b-modal id="gs_modal_list_files" ref="gsModal" title="Import project from Google drive" @show="resetOpenModal" @hidden="resetOpenModal" @ok="gsImportProject">
+    <b-modal id="gs_modal_list_files" ref="openModal" title="Import project from Google drive" @show="resetOpenModal" @hidden="resetOpenModal" @ok="gsImportProject">
         <!--<div v-for="(item, index) in projectsName" :key="`fruit-${index}`">
             {{ item }}
         </div>-->
