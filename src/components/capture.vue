@@ -1,6 +1,5 @@
 <template>
-<div class="w-100 h-100">
-    <div class="vld-parent main-panel">
+<div class="w-100 h-100 vld-parent">    
         <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>    
         <div class="d-flex w-100 h-100 outer-wrap">
             <div class="d-flex flex-fill flex-column main-panel" style="background-color:white;">                
@@ -19,7 +18,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    
         <b-modal ref="capture-modal" hide-footer title="Using Component Methods">
             <div class="d-block text-center">
                 <h3> New image has been captured!</h3>

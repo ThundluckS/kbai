@@ -485,7 +485,7 @@
 
     <b-modal
       id="gs_modal_list_files"
-      ref="openModal"
+      ref="gsModal"
       title="Import project from Google drive"
       @show="resetOpenModal"
       @hidden="resetOpenModal"
@@ -695,7 +695,7 @@ export default {
         this.getProjectDir !== "None"
       ) {
         this.$nextTick(() => {
-          this.$refs.openModal.hide();          
+          this.$refs.gsModal.hide();          
           this.isLoading = true;
           axiosInstance
             .post("importFromGoogleDrive", {
