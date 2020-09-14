@@ -483,29 +483,21 @@
       </b-table>
     </b-modal>
 
-    <b-modal
-      id="gs_modal_list_files"
-      ref="gsModal"
-      title="Import project from Google drive"
-      @show="resetOpenModal"
-      @hidden="resetOpenModal"
-      @ok="gsImportProject"
-    >
-      <p class="p-color small">เลือกโปรเจคที่ต้องการนำเข้าข้อมูล </p>
-      <b-table
-        show-empty
-        striped
-        hover
-        stacked="md"
-        caption-top
-        selectable
-        :select-mode="selectMode"
-        selectedVariant="success"
-        :items="gsProjectsName"
-        @row-selected="gsRowSelected"
-        @row-clicked="gsRowClicked"
-      >
-      </b-table>
+    <b-modal id="gs_modal_list_files" ref="gsModal" title="Import project from Google drive" @show="resetOpenModal" @hidden="resetOpenModal" @ok="gsImportProject">
+        <!--<div v-for="(item, index) in projectsName" :key="`fruit-${index}`">
+            {{ item }}
+        </div>-->
+        <b-dropdown id="dropdown-1" :text="
+            getTrainingType !== 'None'
+              ? getTrainingType
+              : 'Select trainning type'
+          " class="mode-select">
+            <b-dropdown-item @click="handleSelect('None')">None</b-dropdown-item>
+            <b-dropdown-item @click="handleSelect('Object detection')">Object detection</b-dropdown-item>
+            <!-- <b-dropdown-item @click="handleSelect('Image classification')">Image classification</b-dropdown-item> -->
+        </b-dropdown>
+        <b-table show-empty striped hover stacked="md" caption-top selectable :select-mode="selectMode" selectedVariant="success" :items="gsProjectsName" @row-selected="gsRowSelected" @row-clicked="gsRowClicked">
+        </b-table>
     </b-modal>
 
     <b-modal
@@ -667,17 +659,17 @@ export default {
       this.gsSelectedProject = this.gsProjectsName[index].Projects;
     },   
     gsImportProject: function () {
-      this.isLoading = true;
-      axiosInstance
-        .post("importFromGoogleDrive", {
-          projectName: this.gsSelectedProject,
-        })
-        .then((response) => {
-          console.log(response.data);
-          this.isLoading = false;
-          //this.isProjectLoaded = true
-        });           
-    },
+            this.isLoading = true;
+            axiosInstance
+                .post('importFromGoogleDrive', {
+                    projectName: this.gsSelectedProject
+                })
+                .then((response) => {
+                    console.log(response.data)
+                    this.isLoading = false;
+                    //this.isProjectLoaded = true
+                })
+        },
     handleProjectDelete: function (bvModalEvt) {
       if (this.deletingProject === null) {
         bvModalEvt.preventDefault();
