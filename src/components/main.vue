@@ -20,7 +20,7 @@
             data-md-tooltip="นำเข้า Project จาก Google Drive"
             class="btn-base import"
             variant="danger"
-            @click="importProject"
+            @click="ImportProject"
             v-b-modal.gs_modal_list_files
             :disabled="isLoading || isSaving"
           />
@@ -489,25 +489,8 @@
       title="Import project from Google drive"
       @show="resetOpenModal"
       @hidden="resetOpenModal"
-      @ok="gsEventProject"
+      @ok="gsImportProject"
     >
-      <!--<div v-for="(item, index) in projectsName" :key="`fruit-${index}`">
-            {{ item }}
-        </div>-->
-        <p class="p-notice-color small">* กรุณาเลือกประเภทโปรเจค</p>
-      <b-dropdown
-        id="dropdown-1"
-        :text="
-          getTrainingType !== 'None' ? getTrainingType : 'Select trainning type'
-        "
-        class="mode-select"
-      >
-        <b-dropdown-item @click="handleSelect('None')">None</b-dropdown-item>
-        <b-dropdown-item @click="handleSelect('Object detection')"
-          >Object detection</b-dropdown-item
-        >
-        <!-- <b-dropdown-item @click="handleSelect('Image classification')">Image classification</b-dropdown-item> -->
-      </b-dropdown>
       <p class="p-color small">เลือกโปรเจคที่ต้องการนำเข้าข้อมูล </p>
       <b-table
         show-empty
@@ -682,34 +665,18 @@ export default {
     gsRowClicked: function (item, index) {
       console.log(this.gsProjectsName[index].Projects);
       this.gsSelectedProject = this.gsProjectsName[index].Projects;
-    },
-    gsEventProject(bvModalEvt) {
-      // Prevent modal from closing
-      bvModalEvt.preventDefault();
-      // Trigger submit handler
-      this.gsImportProject();
-    },
+    },   
     gsImportProject: function () {
-      if (
-        this.$store.getters.getTrainingType !== "None" &&
-        this.getProjectDir !== "None"
-      ) {
-        this.$nextTick(() => {
-          this.$refs.gsModal.hide();          
-          this.isLoading = true;
-          axiosInstance
-            .post("importFromGoogleDrive", {
-             projectName: this.gsSelectedProject,
-            })
-            .then((response) => {
-              console.log(response.data);
-              this.isLoading = false;
-              //this.isProjectLoaded = true
-            });  
-        });
-      } else {
-        console.log("Training type is required.");
-      }            
+      this.isLoading = true;
+      axiosInstance
+        .post("importFromGoogleDrive", {
+          projectName: this.gsSelectedProject,
+        })
+        .then((response) => {
+          console.log(response.data);
+          this.isLoading = false;
+          //this.isProjectLoaded = true
+        });           
     },
     handleProjectDelete: function (bvModalEvt) {
       if (this.deletingProject === null) {
