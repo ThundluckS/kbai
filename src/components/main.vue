@@ -9,35 +9,10 @@
       <div class="left-panel d-flex flex-column">
         <div class="l-title font-weight-bold">KidBright AI</div>
         <div class="d-inline-flex flex-wrap menu-starter">
-          <div
-            class="btn-base new"
-            data-md-tooltip="สร้าง Project ใหม่"
-            v-on:click="selectedMenu = 1"
-            v-b-modal.modal-prevent-closing
-            :disabled="isLoading || isSaving"
-          />
-          <div
-            data-md-tooltip="นำเข้า Project จาก Google Drive"
-            class="btn-base import"
-            variant="danger"
-            @click="ImportProject"
-            v-b-modal.gs_modal_list_files
-            :disabled="isLoading || isSaving"
-          />
-          <div
-            data-md-tooltip="เปิด Project ที่เคยสร้างไว้แล้ว"
-            class="btn-base open"
-            v-on:click="getAllProjects"
-            v-b-modal.modal_list_files
-            :disabled="isLoading || isSaving"
-          />
-          <div
-            data-md-tooltip="บันทึกข้อมูล"
-            class="btn-base save"
-            variant="success"
-            @click="saveToUSB"
-            :disabled="isLoading || isSaving"
-          >
+          <div class="btn-base new" data-md-tooltip="สร้าง Project ใหม่" v-on:click="selectedMenu = 1" v-b-modal.modal-prevent-closing :disabled="isLoading || isSaving" />
+          <div data-md-tooltip="นำเข้า Project จาก Google Drive" class="btn-base import" variant="danger" @click="ejectUSB" v-b-modal.gs_modal_list_files :disabled="isLoading || isSaving" />
+          <div data-md-tooltip="เปิด Project ที่เคยสร้างไว้แล้ว" class="btn-base open" v-on:click="getAllProjects" v-b-modal.modal_list_files :disabled="isLoading || isSaving" />
+          <div data-md-tooltip="บันทึกข้อมูล" class="btn-base save" variant="success" @click="saveToUSB" :disabled="isLoading || isSaving">
             <b-spinner v-if="isSaving" small />
           </div>
         </div>
@@ -392,43 +367,20 @@
       </div>
       <!-- <div>Right Panel</div> -->
     </div>
-    <b-modal
-      id="modal-prevent-closing"
-      ref="modal"
-      title="Enter project name"
-      @show="resetModal"
-      @hidden="resetModal"
-      @ok="handleOk"
-    >
-      <form ref="form" @submit.stop.prevent="handleSubmit">
-        <b-dropdown
-          id="dropdown-1"
-          :text="
+    <b-modal id="modal-prevent-closing" ref="modal" title="Enter project name" @show="resetModal" @hidden="resetModal" @ok="handleOk">
+        <form ref="form" @submit.stop.prevent="handleSubmit">
+            <b-dropdown id="dropdown-1" :text="
             getTrainingType !== 'None'
               ? getTrainingType
               : 'Select trainning type'
-          "
-          class="mode-select"
-        >
-          <b-dropdown-item @click="handleSelect('Object detection')"
-            >Object detection</b-dropdown-item
-          >
-          <!-- <b-dropdown-item @click="handleSelect('Image classification')">Image classification</b-dropdown-item> -->
-        </b-dropdown>
-        <b-form-group
-          :state="nameState"
-          label="Name"
-          label-for="name-input"
-          invalid-feedback="Name is required"
-        >
-          <b-form-input
-            id="name-input"
-            v-model="projectDirIn"
-            :state="nameState"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <p class="p-notice-color small">* เงื่อนไขการตั้งชื่อโปรเจค</p>
+          " class="mode-select">
+                <b-dropdown-item @click="handleSelect('Object detection')">Object detection</b-dropdown-item>
+                <!-- <b-dropdown-item @click="handleSelect('Image classification')">Image classification</b-dropdown-item> -->
+            </b-dropdown>
+            <b-form-group :state="nameState" label="Name" label-for="name-input" invalid-feedback="Name is required">
+                <b-form-input id="name-input" v-model="projectDirIn" :state="nameState" required></b-form-input>
+            </b-form-group>
+            <p class="p-notice-color small">* เงื่อนไขการตั้งชื่อโปรเจค</p>
         <p class="p-notice-color small">1. ภาษาอังกฤษเท่านั้น</p>
         <p class="p-notice-color small">
           2. ตั้งชื่อตามรูปแบบดังต่อไปนี้ <br /><span class="p-color"
@@ -442,50 +394,27 @@
         </p>
         <p class="p-notice-color small">
           ตั้งชื่อโปรเจค: <span class="p-color">N1_SchoolName_KidBright</span>
-        </p>
-      </form>
+        </p>            
+        </form>
     </b-modal>
 
-    <b-modal
-      id="modal_list_files"
-      ref="openModal"
-      title="Projects list"
-      @show="resetOpenModal"
-      @hidden="resetOpenModal"
-      @ok="openProject"
-    >
-      <!--<div v-for="(item, index) in projectsName" :key="`fruit-${index}`">
+    <b-modal id="modal_list_files" ref="openModal" title="Projects list" @show="resetOpenModal" @hidden="resetOpenModal" @ok="openProject">
+        <!--<div v-for="(item, index) in projectsName" :key="`fruit-${index}`">
             {{ item }}
         </div>-->
-      <b-dropdown
-        id="dropdown-1"
-        :text="
-          getTrainingType !== 'None' ? getTrainingType : 'Select trainning type'
-        "
-        class="mode-select"
-      >
-        <b-dropdown-item @click="handleSelect('None')">None</b-dropdown-item>
-        <b-dropdown-item @click="handleSelect('Object detection')"
-          >Object detection</b-dropdown-item
-        >
-        <!-- <b-dropdown-item @click="handleSelect('Image classification')">Image classification</b-dropdown-item> -->
-      </b-dropdown>
-      <p class="p-notice-color small">* กรุณาเลือกประเภทโปรเจค</p>
-      <b-table
-        show-empty
-        striped
-        hover
-        stacked="md"
-        caption-top
-        selectable
-        :select-mode="selectMode"
-        selectedVariant="success"
-        :items="projectsName"
-        @row-selected="rowSelected"
-        @row-clicked="rowClicked"
-      >
-      </b-table>
-    </b-modal>
+        <b-dropdown id="dropdown-1" :text="
+            getTrainingType !== 'None'
+              ? getTrainingType
+              : 'Select trainning type'
+          " class="mode-select">
+            <b-dropdown-item @click="handleSelect('None')">None</b-dropdown-item>
+            <b-dropdown-item @click="handleSelect('Object detection')">Object detection</b-dropdown-item>
+            <!-- <b-dropdown-item @click="handleSelect('Image classification')">Image classification</b-dropdown-item> -->
+        </b-dropdown>
+        <p class="p-notice-color small">* กรุณาเลือกประเภทโปรเจค</p>
+        <b-table show-empty striped hover stacked="md" caption-top selectable :select-mode="selectMode" selectedVariant="success" :items="projectsName" @row-selected="rowSelected" @row-clicked="rowClicked">
+        </b-table>
+    </b-modal>    
 
     <b-modal id="gs_modal_list_files" ref="openModal" title="Import project from Google drive" @show="resetOpenModal" @hidden="resetOpenModal" @ok="gsImportProject">
         <!--<div v-for="(item, index) in projectsName" :key="`fruit-${index}`">
@@ -631,38 +560,38 @@ export default {
     };
   },
   methods: {
-    rowSelected(items) {
-      //console.log(items)
-      return (this.selected = items);
-    },
-    rowClicked: function (item, index) {
-      this.$store.dispatch(
-        "changeProjectDir",
-        this.projectsName[index].Projects
-      );
-      this.$store.dispatch("reqImages");
-    },
-    rowDeleteSelected(items) {
-      //console.log(items)
-      this.selected = items;
-      this.isProjectLoaded = true;
-    },
-    rowDeleteClicked: function (item, index) {
-      this.$store.dispatch(
-        "changeProjectDir",
-        this.projectsName[index].Projects
-      );
-      this.deletingProject = this.projectsName[index].Projects;
-    },
-    gsRowSelected(items) {
-      //console.log(items)
-      return (this.selected = items);
-    },
-    gsRowClicked: function (item, index) {
-      console.log(this.gsProjectsName[index].Projects);
-      this.gsSelectedProject = this.gsProjectsName[index].Projects;
-    },   
-    gsImportProject: function () {
+        rowSelected(items) {
+            //console.log(items)
+            return (this.selected = items);
+        },
+        rowClicked: function (item, index) {
+            this.$store.dispatch(
+                "changeProjectDir",
+                this.projectsName[index].Projects
+            );
+            this.$store.dispatch("reqImages");
+        },
+        rowDeleteSelected(items) {
+            //console.log(items)
+            this.selected = items;
+            this.isProjectLoaded = true;
+        },
+        rowDeleteClicked: function (item, index) {
+            this.$store.dispatch(
+                "changeProjectDir",
+                this.projectsName[index].Projects
+            );
+            this.deletingProject = this.projectsName[index].Projects;
+        },
+        gsRowSelected(items) {
+            //console.log(items)
+            return (this.selected = items);
+        },
+        gsRowClicked: function (item, index) {
+            console.log(this.gsProjectsName[index].Projects)
+            this.gsSelectedProject = this.gsProjectsName[index].Projects
+        },
+        gsImportProject: function () {
             this.isLoading = true;
             axiosInstance
                 .post('importFromGoogleDrive', {
@@ -674,750 +603,692 @@ export default {
                     //this.isProjectLoaded = true
                 })
         },
-    handleProjectDelete: function (bvModalEvt) {
-      if (this.deletingProject === null) {
-        bvModalEvt.preventDefault();
-      } else {
-        this.$store.dispatch("deleteProject", this.deletingProject);
-        this.$store.dispatch("regProjects").then(
-          () => {
-            console.log(
-              "Got some data, now lets show something in this component"
-            );
-            this.deletingProject = null;
-          },
-          () => {
-            console.error(
-              "Got nothing from server. Prompt user to check internet connection and try again"
-            );
-          }
-        );
-      }
-    },
-    deleteProject: function () {
-      this.getAllProjects();
-    },
-    getAllProjects: function () {
-      this.$store.dispatch("regProjects").then(
-        () => {
-          console.log(
-            "Got some data, now lets show something in this component"
-          );
-          var projectNames = this.$store.getters.getProjects;
-          while (this.projectsName.length) {
-            this.projectsName.pop();
-            this.selectedMenu = 1;
-          }
-          projectNames.forEach(
-            function (item) {
-              this.projectsName.push({
-                Projects: item,
-              });
-            }.bind(this)
-          );
-          //this.projectsName = this.$store.getters.getProjects
-          //this.$store.dispatch('regProjects')
-          console.log(this.projectsName);
+        handleProjectDelete: function (bvModalEvt) {
+            if (this.deletingProject === null) {
+                bvModalEvt.preventDefault();
+            } else {
+                this.$store.dispatch("deleteProject", this.deletingProject);
+                this.$store.dispatch("regProjects").then(
+                    () => {
+                        console.log(
+                            "Got some data, now lets show something in this component"
+                        );
+                        this.deletingProject = null;
+                    },
+                    () => {
+                        console.error(
+                            "Got nothing from server. Prompt user to check internet connection and try again"
+                        );
+                    }
+                );
+            }
         },
-        () => {
-          console.error(
-            "Got nothing from server. Prompt user to check internet connection and try again"
-          );
-        }
-      );
-    },
-    async listDirectoriesFromUSB() {
-      const res = await axiosInstance.get("/getDirectories");
-      if (res) {
-        if (res.data.status === "error") {
-          this.$bvToast.toast(res.data.message, {
-            title: "Error!",
-            autoHideDelay: 3000,
-          });
-        } else if (res.data.status === "success") {
-          this.projectsfromUSB = res.data.data.map((e) => ({
-            Project: e,
-          }));
-        }
-      }
-    },
-    onSelectDirectory(items) {
-      if (items && items.length > 0) {
-        this.directorySelected = items[0]["Project"];
-      }
-    },
-    async loadFromUSB() {
-      if (this.directorySelected) {
-        const res = await axiosInstance.post("/loadFromUSB", {
-          projectName: this.directorySelected,
-        });
-        if (res) {
-          if (res.data.status === "error") {
-            this.$bvToast.toast(res.data.message, {
-              title: "Error!",
-              autoHideDelay: 3000,
-            });
-          } else if (res.data.status === "success") {
-            this.$bvToast.toast(res.data.message, {
-              title: "Success!",
-              autoHideDelay: 3000,
-            });
-            this.$store.dispatch("changeProjectDir", this.directorySelected);
-            this.$store.dispatch("reqImages");
-            this.loadWorkspace();
-            this.directorySelected = null;
-          }
-        }
-      }
-    },
-    async loadAllFromUSB() {
-      this.isLoading = true;
-      const res = await axiosInstance.post("/loadAllFromUSB");
-      this.isLoading = false;
-      if (res) {
-        if (res.data.status === "error") {
-          this.$bvToast.toast(res.data.message, {
-            title: "Error!",
-            autoHideDelay: 3000,
-          });
-        } else if (res.data.status === "success") {
-          this.$bvToast.toast(res.data.message, {
-            title: "Success!",
-            autoHideDelay: 3000,
-          });
-        }
-      }
-    },
-    async saveToUSB() {
-      if (this.getProjectDir) {
-        this.isSaving = true;
-        const res = await axiosInstance.post("/saveToUSB", {
-          projectName: this.getProjectDir,
-        });
-        this.isSaving = false;
-        if (res) {
-          if (res.data.status === "error") {
-            this.$bvToast.toast(res.data.message, {
-              title: "Error!",
-              autoHideDelay: 3000,
-            });
-          } else if (res.data.status === "success") {
-            this.$bvToast.toast(res.data.message, {
-              title: "Success!",
-              autoHideDelay: 3000,
-            });
-          }
-        }
-
-        var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
-        let domToPretty = Blockly.Xml.domToPrettyText(xml);
-        axiosInstance
-          .post("saveXML", {
-            filename: this.$store.getters.getProjectDir + "/test1.xml",
-            data: domToPretty,
-          })
-          .then((response) => {
-            console.log(response.data);
-            //this.isProjectLoaded = true
-          });
-      }
-    },
-    async importProject() {
-      const res = await axiosInstance.post("/gsGetProjects");
-      while (this.gsProjectsName.length) {
-        this.gsProjectsName.pop();
-      }
-      if (res) {
-        console.log(res);
-      }
-      res.data.projects.forEach(
-        function (item) {
-          this.gsProjectsName.push({
-            Projects: item,
-          });
-        }.bind(this)
-      );
-
-      console.log(this.gsProjectsName);
-    },
-    checkFormValidity() {
-      const valid = this.$refs.form.checkValidity();
-      this.nameState = valid ? "valid" : "invalid";
-      return valid;
-    },
-    resetModal() {
-      this.projectDirIn = "";
-      this.nameState = null;
-    },
-    handleOk(bvModalEvt) {
-      // Prevent modal from closing
-      bvModalEvt.preventDefault();
-      // Trigger submit handler
-      this.handleSubmit();
-    },
-    handleSelect(type) {
-      this.$store.dispatch("setTrainingType", type);
-    },
-    handleSubmit() {
-      // Exit when the form isn't valid
-      if (!this.checkFormValidity()) {
-        return;
-      }
-      // Push the name to submitted names
-      //this.submittedNames.push(this.projectDirIn)
-      this.$store.dispatch("setProjectDir", this.projectDirIn);
-      // Hide the modal manually
-      this.$nextTick(() => {
-        this.$store.dispatch("regProjects");
-        this.$refs.modal.hide();
-      });
-      this.$store.dispatch("clearBlocklyWorkspace");
-    },
-    openProject(bvModalEvt) {
-      // Prevent modal from closing
-      bvModalEvt.preventDefault();
-      // Trigger submit handler
-      this.selectedProjectType();
-    },
-    selectedProjectType() {
-      if (
-        this.$store.getters.getTrainingType !== "None" &&
-        this.getProjectDir !== "None"
-      ) {
-        this.$nextTick(() => {
-          this.$refs.openModal.hide();
-          this.loadWorkspace();
-          this.isProjectLoaded = false;
-        });
-      } else {
-        console.log("Training type is required.");
-      }
-    },
-    resetOpenModal() {
-      this.$store.getTrainingType === "None";
-    },
-    handleTabChange(tabIndex) {
-      console.log("Tabindex = " + tabIndex);
-      // Because without using v-tab, Then index start with 1
-      if (tabIndex == 4 && this.loaded == false) {
-        this.isRunHiden = false;
-      }
-      if (tabIndex == 4) {
-        this.isRunHiden = true;
-      } else {
-        this.isRunHiden = false;
-      }
-
-      if (tabIndex == 2) {
-        if (this.$store.getters.getTrainingType === "Image classification") {
-          console.log(
-            "get all files Image classification" + this.$store.state.projectDir
-          );
-          axiosInstance
-            .post("/getFiles", {
-              path: this.$store.state.projectDir,
-            })
-            .then((response) => {
-              console.log(response.data.files);
-              while (this.$refs.anotateForClassifyComponent.images.length) {
-                this.$refs.anotateForClassifyComponent.images.pop();
-              }
-              var info = response.data.files;
-              var index, len;
-              for (index = 0, len = info.length; index < len; ++index) {
-                var imPath = "/" + info[index].file;
-                this.$refs.anotateForClassifyComponent.images.push({
-                  fileName: info[index].file,
-                  file: imPath,
-                  id: info[index].id,
-                  isAnnotated: info[index].isAnotated,
-                  class: info[index].class,
-                });
-              }
-            });
-
-          axiosInstance
-            .post("/getAnotaions", {
-              projectpath: this.$store.state.projectDir,
-            })
-            .then((response) => {
-              console.log(response.data.classes);
-              while (this.$refs.anotateForClassifyComponent.classes.length) {
-                this.$refs.anotateForClassifyComponent.classes.pop();
-              }
-
-              var info1 = response.data.classes;
-              var index1, len1;
-              for (index1 = 0, len1 = info1.length; index1 < len1; ++index1) {
-                this.$refs.anotateForClassifyComponent.classes.push({
-                  Label: info1[index1],
-                });
-              }
-
-              console.log(this.$refs.anotateForClassifyComponent.classes);
-            });
-        } else {
-          console.log(
-            "get all files Object deetection" + this.$store.state.projectDir
-          );
-          axiosInstance
-            .post("/getFiles", {
-              path: this.$store.state.projectDir,
-            })
-            .then((response) => {
-              console.log(response.data.files);
-              while (this.$refs.anotateComponent.images.length) {
-                this.$refs.anotateComponent.images.pop();
-              }
-              var info = response.data.files;
-              var index, len;
-              console.log(info.length);
-              for (index = 0, len = info.length; index < len; ++index) {
-                var imPath = "/" + info[index].file;
-                this.$refs.anotateComponent.images.push({
-                  fileName: info[index].file,
-                  file: imPath,
-                  id: info[index].id,
-                  isAnnotated: info[index].isAnotated,
-                  class: info[index].class,
-                  classCounts: info[index].classCounts,
-                });
-                console.log(info[index].file);
-              }
-            });
-
-          axiosInstance
-            .post("/getAnotaions", {
-              projectpath: this.$store.state.projectDir,
-            })
-            .then((response) => {
-              console.log(response.data.classes);
-              while (this.$refs.anotateComponent.classes.length) {
-                this.$refs.anotateComponent.classes.pop();
-              }
-
-              var info1 = response.data.classes;
-              var index1, len1;
-              for (index1 = 0, len1 = info1.length; index1 < len1; ++index1) {
-                this.$refs.anotateComponent.classes.push({
-                  Label: info1[index1],
-                });
-              }
-
-              console.log(this.$refs.anotateComponent.classes);
-            });
-        }
-      }
-
-      if (tabIndex == 1) {
-        axiosInstance
-          .post("/getFiles", {
-            path: this.$store.state.projectDir,
-          })
-          .then((response) => {
-            console.log(response.data.files);
-            while (this.$refs.captureComponent.images.length) {
-              this.$refs.captureComponent.images.pop();
+        deleteProject: function () {
+            this.getAllProjects();
+        },
+        getAllProjects: function () {
+            this.$store.dispatch("regProjects").then(
+                () => {
+                    console.log(
+                        "Got some data, now lets show something in this component"
+                    );
+                    var projectNames = this.$store.getters.getProjects;
+                    while (this.projectsName.length) {
+                        this.projectsName.pop();
+                        this.selectedMenu = 1;
+                    }
+                    projectNames.forEach(
+                        function (item) {
+                            this.projectsName.push({
+                                Projects: item,
+                            });
+                        }.bind(this)
+                    );
+                    //this.projectsName = this.$store.getters.getProjects
+                    //this.$store.dispatch('regProjects')
+                    console.log(this.projectsName);
+                },
+                () => {
+                    console.error(
+                        "Got nothing from server. Prompt user to check internet connection and try again"
+                    );
+                }
+            );
+        },
+        async listDirectoriesFromUSB() {
+            const res = await axiosInstance.get("/getDirectories");
+            if (res) {
+                if (res.data.status === "error") {
+                    this.$bvToast.toast(res.data.message, {
+                        title: "Error!",
+                        autoHideDelay: 3000,
+                    });
+                } else if (res.data.status === "success") {
+                    this.projectsfromUSB = res.data.data.map((e) => ({
+                        Project: e,
+                    }));
+                }
             }
-            var info = response.data.files;
-            var index, len;
-            for (index = 0, len = info.length; index < len; ++index) {
-              var imPath = "/" + info[index].file;
-              this.$refs.captureComponent.images.push({
-                fileName: info[index].file,
-                file: imPath,
-                id: info[index].id,
-              });
+        },
+        onSelectDirectory(items) {
+            if (items && items.length > 0) {
+                this.directorySelected = items[0]["Project"];
             }
-          });
-      }
-
-      if (tabIndex == 3) {
-        this.$refs.trainLocalComponent.result = "";
-        if (this.$store.getters.getTrainingType === "Image classification") {
-          axiosInstance
-            .post("/createImclassDataset", {
-              path: this.$store.state.projectDir,
-            })
-            .then((response) => {
-              console.log(response.data);
+        },
+        async loadFromUSB() {
+            if (this.directorySelected) {
+                const res = await axiosInstance.post("/loadFromUSB", {
+                    projectName: this.directorySelected,
+                });
+                if (res) {
+                    if (res.data.status === "error") {
+                        this.$bvToast.toast(res.data.message, {
+                            title: "Error!",
+                            autoHideDelay: 3000,
+                        });
+                    } else if (res.data.status === "success") {
+                        this.$bvToast.toast(res.data.message, {
+                            title: "Success!",
+                            autoHideDelay: 3000,
+                        });
+                        this.$store.dispatch("changeProjectDir", this.directorySelected);
+                        this.$store.dispatch("reqImages");
+                        this.loadWorkspace();
+                        this.directorySelected = null;
+                    }
+                }
+            }
+        },
+        async loadAllFromUSB() {
+            this.isLoading = true;
+            const res = await axiosInstance.post("/loadAllFromUSB");
+            this.isLoading = false;
+            if (res) {
+                if (res.data.status === "error") {
+                    this.$bvToast.toast(res.data.message, {
+                        title: "Error!",
+                        autoHideDelay: 3000,
+                    });
+                } else if (res.data.status === "success") {
+                    this.$bvToast.toast(res.data.message, {
+                        title: "Success!",
+                        autoHideDelay: 3000,
+                    });
+                }
+            }
+        },
+        async saveToUSB() {
+            if (this.getProjectDir) {
+                this.isSaving = true;
+                const res = await axiosInstance.post("/saveToUSB", {
+                    projectName: this.getProjectDir,
+                });
+                this.isSaving = false;
+                if (res) {
+                    if (res.data.status === "error") {
+                        this.$bvToast.toast(res.data.message, {
+                            title: "Error!",
+                            autoHideDelay: 3000,
+                        });
+                    } else if (res.data.status === "success") {
+                        this.$bvToast.toast(res.data.message, {
+                            title: "Success!",
+                            autoHideDelay: 3000,
+                        });
+                    }
+                }
+                var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace)
+                let domToPretty = Blockly.Xml.domToPrettyText(xml)
+                axiosInstance
+                    .post('saveXML', {
+                        filename: this.$store.getters.getProjectDir + '/test1.xml',
+                        data: domToPretty,
+                    })
+                    .then((response) => {
+                        console.log(response.data)
+                        //this.isProjectLoaded = true
+                    })
+            }
+        },
+        async ejectUSB() {
+            const res = await axiosInstance.post("/gsGetProjects");
+            while (this.gsProjectsName.length) {
+                this.gsProjectsName.pop();
+            }
+            if (res) {
+                console.log(res)
+            }
+            res.data.projects.forEach(
+                function (item) {
+                    this.gsProjectsName.push({
+                        Projects: item,
+                    });
+                }.bind(this)
+            );
+            console.log(this.gsProjectsName)
+        },
+        checkFormValidity() {
+            const valid = this.$refs.form.checkValidity();
+            this.nameState = valid ? "valid" : "invalid";
+            return valid;
+        },
+        resetModal() {
+            this.projectDirIn = "";
+            this.nameState = null;
+        },
+        handleOk(bvModalEvt) {
+            // Prevent modal from closing
+            bvModalEvt.preventDefault();
+            // Trigger submit handler
+            this.handleSubmit();
+        },
+        handleSelect(type) {
+            this.$store.dispatch("setTrainingType", type);
+        },
+        handleSubmit() {
+            // Exit when the form isn't valid
+            if (!this.checkFormValidity()) {
+                return;
+            }
+            // Push the name to submitted names
+            //this.submittedNames.push(this.projectDirIn)
+            this.$store.dispatch("setProjectDir", this.projectDirIn);
+            // Hide the modal manually
+            this.$nextTick(() => {
+                this.$store.dispatch("regProjects");
+                this.$refs.modal.hide();
             });
-        } else {
-        }
-      }
-    },
-
-    showCode() {
-      console.log("Hello world code!!!!! b4");
-      this.code = blocklyPython.workspaceToCode(this.blockly_woakspace);
-      //blocklyPython.workspaceToCode(this.blockly_woakspace).then((returnVal) => {
-      //    console.log(returnVal.data.data)
-      //})
-      this.$refs.blocklyComponent.result = "";
-      console.log("Hello world code!!!!!");
-      this.isRunning = true;
-      axiosInstance
-        .post("run", {
-          filename: this.$store.getters.getProjectDir + "/test1.py",
-          data: this.code,
-        })
-        .then((response) => {
-          console.log(response.data);
-          this.isProjectLoaded = true;
-          //this.url = "http://192.168.88.243:8080/stream?topic=/output/image_detected&type=ros_compressed"
-          this.$refs["pyhonLoading"].show();
-          /* setTimeout(() => {
-
+            this.$store.dispatch("clearBlocklyWorkspace");
+        },
+        openProject(bvModalEvt) {
+            // Prevent modal from closing
+            bvModalEvt.preventDefault();
+            // Trigger submit handler
+            this.selectedProjectType();
+        },
+        selectedProjectType() {
+            if (
+                this.$store.getters.getTrainingType !== "None" &&
+                this.getProjectDir !== "None"
+            ) {
+                this.$nextTick(() => {
+                    this.$refs.openModal.hide();
+                    this.loadWorkspace();
+                    this.isProjectLoaded = false;
+                });
+            } else {
+                console.log("Training type is required.");
+            }
+        },
+        resetOpenModal() {
+            this.$store.getTrainingType === "None";
+        },
+        handleTabChange(tabIndex) {
+            console.log("Tabindex = " + tabIndex);
+            // Because without using v-tab, Then index start with 1
+            if (tabIndex == 1 && this.loaded == false) {
+                this.isRunHiden = false;
+            }
+            if (tabIndex == 1) {
+                this.isRunHiden = true;
+            } else {
+                this.isRunHiden = false;
+            }
+            if (tabIndex == 3) {
+                if (this.$store.getters.getTrainingType === 'Image classification') {
+                    console.log("get all files Image classification" + this.$store.state.projectDir);
+                    axiosInstance.post("/getFiles", {
+                        path: this.$store.state.projectDir
+                    }).then((response) => {
+                        console.log(response.data.files);
+                        while (this.$refs.anotateForClassifyComponent.images.length) {
+                            this.$refs.anotateForClassifyComponent.images.pop();
+                        }
+                        var info = response.data.files
+                        var index, len
+                        for (index = 0, len = info.length; index < len; ++index) {
+                            var imPath =
+                                '/' +
+                                info[index].file
+                            this.$refs.anotateForClassifyComponent.images.push({
+                                fileName: info[index].file,
+                                file: imPath,
+                                id: info[index].id,
+                                isAnnotated: info[index].isAnotated,
+                                class: info[index].class,
+                            })
+                        }
+                    });
+                    axiosInstance.post("/getAnotaions", {
+                        projectpath: this.$store.state.projectDir
+                    }).then((response) => {
+                        console.log(response.data.classes);
+                        while (this.$refs.anotateForClassifyComponent.classes.length) {
+                            this.$refs.anotateForClassifyComponent.classes.pop();
+                        }
+                        var info1 = response.data.classes
+                        var index1, len1
+                        for (index1 = 0, len1 = info1.length; index1 < len1; ++index1) {
+                            this.$refs.anotateForClassifyComponent.classes.push({
+                                Label: info1[index1]
+                            })
+                        }
+                        console.log(this.$refs.anotateForClassifyComponent.classes)
+                    });
+                } else {
+                    console.log("get all files Object deetection" + this.$store.state.projectDir);
+                    axiosInstance.post("/getFiles", {
+                        path: this.$store.state.projectDir
+                    }).then((response) => {
+                        console.log(response.data.files);
+                        while (this.$refs.anotateComponent.images.length) {
+                            this.$refs.anotateComponent.images.pop();
+                        }
+                        var info = response.data.files
+                        var index, len
+                        console.log(info.length)
+                        for (index = 0, len = info.length; index < len; ++index) {
+                            var imPath =
+                                '/' +
+                                info[index].file
+                            this.$refs.anotateComponent.images.push({
+                                fileName: info[index].file,
+                                file: imPath,
+                                id: info[index].id,
+                                isAnnotated: info[index].isAnotated,
+                                class: info[index].class,
+                                classCounts: info[index].classCounts,
+                            })
+                            console.log(info[index].file)
+                        }
+                    });
+                    axiosInstance.post("/getAnotaions", {
+                        projectpath: this.$store.state.projectDir
+                    }).then((response) => {
+                        console.log(response.data.classes);
+                        while (this.$refs.anotateComponent.classes.length) {
+                            this.$refs.anotateComponent.classes.pop();
+                        }
+                        var info1 = response.data.classes
+                        var index1, len1
+                        for (index1 = 0, len1 = info1.length; index1 < len1; ++index1) {
+                            this.$refs.anotateComponent.classes.push({
+                                Label: info1[index1]
+                            })
+                        }
+                        console.log(this.$refs.anotateComponent.classes)
+                    });
+                }
+            }
+            if (tabIndex == 2) {
+                axiosInstance.post("/getFiles", {
+                    path: this.$store.state.projectDir
+                }).then((response) => {
+                    console.log(response.data.files);
+                    while (this.$refs.captureComponent.images.length) {
+                        this.$refs.captureComponent.images.pop();
+                    }
+                    var info = response.data.files
+                    var index, len
+                    for (index = 0, len = info.length; index < len; ++index) {
+                        var imPath =
+                            '/' +
+                            info[index].file
+                        this.$refs.captureComponent.images.push({
+                            fileName: info[index].file,
+                            file: imPath,
+                            id: info[index].id,
+                        })
+                    }
+                });
+            }
+            if (tabIndex == 4) {
+                this.$refs.trainLocalComponent.result = ""
+                if (this.$store.getters.getTrainingType === 'Image classification') {
+                    axiosInstance.post("/createImclassDataset", {
+                        path: this.$store.state.projectDir
+                    }).then((response) => {
+                        console.log(response.data);
+                    });
+                } else {
+                }
+            }
+        },
+        showCode() {
+            console.log("Hello world code!!!!! b4");
+            this.code = blocklyPython.workspaceToCode(this.blockly_woakspace);
+            //blocklyPython.workspaceToCode(this.blockly_woakspace).then((returnVal) => {
+            //    console.log(returnVal.data.data)
+            //})
+            this.$refs.blocklyComponent.result = ""
+            console.log("Hello world code!!!!!");
+            this.isRunning = true;
+            axiosInstance
+                .post("run", {
+                    filename: this.$store.getters.getProjectDir + "/test1.py",
+                    data: this.code,
+                })
+                .then((response) => {
+                    console.log(response.data);
+                    this.isProjectLoaded = true;
+                    //this.url = "http://192.168.88.243:8080/stream?topic=/output/image_detected&type=ros_compressed"
+                    this.$refs["pyhonLoading"].show();
+                    /* setTimeout(() => {
                                          this.url = "http://" + this.ipAddress + ":8080/stream?topic=/output/image_detected&type=ros_compressed"
                                          //this.url = "http://0.0.0.0:8080/stream?topic=/output/image_detected&type=ros_compressed"
                                          this.$refs.displayImage.src = this.url
                                          this.$refs['pyhonLoading'].hide()
                                          console.log(this.url)
                                      }, 12000)*/
-
-          var timerId, percent;
-          percent = 0;
-          timerId = setInterval(() => {
-            // increment progress bar
-            percent += 1;
-            console.log(percent);
-            this.value = percent;
-
-            // complete
-            if (percent >= 24) {
-              clearInterval(timerId);
-
-              this.$refs["pyhonLoading"].hide();
-            }
-          }, 500);
-          //this.url = "https://picsum.photos/250/250/?image=59"
-        });
-      console.log(this.code);
-    },
-
-    stopRun() {
-      axiosInstance
-        .post("stop", {
-          filename: this.$store.getters.getProjectDir + "/test1.py",
-          data: this.code,
-        })
-        .then((response) => {
-          console.log(response.data);
-          this.isProjectLoaded = false;
-          this.isRunning = false;
-        });
-    },
-    saveWorkspace() {
-      var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
-      let domToPretty = Blockly.Xml.domToPrettyText(xml);
-      axiosInstance
-        .post("saveXML", {
-          filename: this.$store.getters.getProjectDir + "/test1.xml",
-          data: domToPretty,
-        })
-        .then((response) => {
-          console.log(response.data);
-          //this.isProjectLoaded = true
-        });
-      console.log(xml);
-    },
-    loadWorkspace() {
-      console.log(this.$store.getters.getProjectDir + "/test1.xml");
-      this.$store.dispatch("clearBlocklyWorkspace");
-
-      axiosInstance
-        .post("getXML", {
-          filename: this.$store.getters.getProjectDir + "/test1.xml",
-        })
-        .then((response) => {
-          console.log(response);
-          /*var xml = Blockly.Xml.textToDom(response.data)
+                    var timerId, percent;
+                    percent = 0;
+                    timerId = setInterval(() => {
+                        // increment progress bar
+                        percent += 1;
+                        console.log(percent);
+                        this.value = percent;
+                        // complete
+                        if (percent >= 24) {
+                            clearInterval(timerId);
+                            this.$refs["pyhonLoading"].hide();
+                        }
+                    }, 500);
+                    //this.url = "https://picsum.photos/250/250/?image=59"
+                });
+            console.log(this.code);
+        },
+        stopRun() {
+            axiosInstance
+                .post("stop", {
+                    filename: this.$store.getters.getProjectDir + "/test1.py",
+                    data: this.code,
+                })
+                .then((response) => {
+                    console.log(response.data);
+                    this.isProjectLoaded = false;
+                    this.isRunning = false;
+                });
+        },
+        saveWorkspace() {
+            var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+            let domToPretty = Blockly.Xml.domToPrettyText(xml);
+            axiosInstance
+                .post("saveXML", {
+                    filename: this.$store.getters.getProjectDir + "/test1.xml",
+                    data: domToPretty,
+                })
+                .then((response) => {
+                    console.log(response.data);
+                    //this.isProjectLoaded = true
+                });
+            console.log(xml);
+        },
+        loadWorkspace() {
+            console.log(this.$store.getters.getProjectDir + "/test1.xml");
+            this.$store.dispatch("clearBlocklyWorkspace");
+            axiosInstance
+                .post("getXML", {
+                    filename: this.$store.getters.getProjectDir + "/test1.xml",
+                })
+                .then((response) => {
+                    console.log(response);
+                    /*var xml = Blockly.Xml.textToDom(response.data)
                           console.log(xml)
                           Blockly.mainWorkspace.clear();
                           Blockly.Xml.domToWorkspace(Blockly.workspace, xml)*/
-
-          this.$store.commit("setBlocklyXml", response.data);
-
-          //Blockly.mainWorkspace.clear();
-
-          //let textToDom = Blockly.Xml.textToDom(response.data);
-          //Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, textToDom);
-
-          //console.log(xml)
-          //this.isProjectLoaded = true
-        });
-    },
-    // linkProperties(route) {
-    //   const routeName = route.name ? route.name : route
-    //   const externalRoute = this.externalRoutes.filter(
-    //     (r) => r.name === routeName,
-    //   )[0]
-    //   let url = externalRoute ? externalRoute.url : routeName
-
-    //   if (externalRoute || url.match(/^(http(s)?|ftp):\/\//)) {
-    //     if (route.query) {
-    //       url = `${url}?${$.param(route.query)}`
-    //     }
-
-    //     return {
-    //       is: 'a',
-    //       href: url,
-    //     }
-    //   }
-
-    //   return {
-    //     is: 'router-link',
-    //     to: {
-    //       name: url,
-    //       query: route.query,
-    //     },
-    //   }
-    // },
-
-    onForward: function () {
-      // var x = 0
-      var y = 0;
-      var z = 0;
-      var pub = true;
-      if (pub === true) {
-        // eslint-disable-next-line no-undef
-        var twist = new ROSLIB.Message({
-          angular: {
-            x: 0,
-            y: 0,
-            z: z,
-          },
-          linear: {
-            x: 0.1,
-            y: y,
-            z: z,
-          },
-        });
-        console.log(twist);
-
-        this.$store.getters.getCmdVel.publish(twist);
-        //console.log(this.cmdVel);
-      }
-    },
-    onBackward: function () {
-      // var x = 0
-      var y = 0;
-      var z = 0;
-      var pub = true;
-      if (pub === true) {
-        // eslint-disable-next-line no-undef
-        var twist = new ROSLIB.Message({
-          angular: {
-            x: 0,
-            y: 0,
-            z: z,
-          },
-          linear: {
-            x: -0.1,
-            y: y,
-            z: z,
-          },
-        });
-        console.log(twist);
-
-        this.$store.getters.getCmdVel.publish(twist);
-        //console.log(this.cmdVel);
-      }
-    },
-    onLeft: function () {
-      // var x = 0
-      var y = 0;
-      var z = 0;
-      var pub = true;
-      if (pub === true) {
-        // eslint-disable-next-line no-undef
-        var twist = new ROSLIB.Message({
-          angular: {
-            x: 0,
-            y: 0,
-            z: -0.3,
-          },
-          linear: {
-            x: 0.1,
-            y: y,
-            z: z,
-          },
-        });
-        console.log(twist);
-
-        this.$store.getters.getCmdVel.publish(twist);
-        //console.log(this.cmdVel);
-      }
-    },
-    onRight: function () {
-      // var x = 0
-      var y = 0;
-      var z = 0;
-      var pub = true;
-      if (pub === true) {
-        // eslint-disable-next-line no-undef
-        var twist = new ROSLIB.Message({
-          angular: {
-            x: 0,
-            y: 0,
-            z: 0.3,
-          },
-          linear: {
-            x: 0.1,
-            y: y,
-            z: z,
-          },
-        });
-        console.log(twist);
-
-        this.$store.getters.getCmdVel.publish(twist);
-        //console.log(this.cmdVel);
-      }
-    },
-    onCCW: function () {
-      // var x = 0
-      var y = 0;
-      var z = 0;
-      var pub = true;
-      if (pub === true) {
-        // eslint-disable-next-line no-undef
-        var twist = new ROSLIB.Message({
-          angular: {
-            x: 0,
-            y: 0,
-            z: 0.3,
-          },
-          linear: {
-            x: 0,
-            y: y,
-            z: z,
-          },
-        });
-        console.log(twist);
-
-        this.$store.getters.getCmdVel.publish(twist);
-        //console.log(this.cmdVel);
-      }
-    },
-    onCW: function () {
-      // var x = 0
-      var y = 0;
-      var z = 0;
-      var pub = true;
-      if (pub === true) {
-        // eslint-disable-next-line no-undef
-        var twist = new ROSLIB.Message({
-          angular: {
-            x: 0,
-            y: 0,
-            z: -0.3,
-          },
-          linear: {
-            x: 0,
-            y: y,
-            z: z,
-          },
-        });
-        console.log(twist);
-
-        this.$store.getters.getCmdVel.publish(twist);
-        //console.log(this.cmdVel);
-      }
-    },
-
-    getBlock() {},
-  },
-  mounted() {
-    this.$store.dispatch("regProjects");
-
-    //this.renderBlockly()
-
-    this.cmdVel = this.$store.getters.getCmdVel;
-
-    let uri = "getIP";
-    console.log("Start roslibjs");
-    // eslint-disable-next-line no-undef
-    this.rbServer = new ROSLIB.Ros();
-    this.rbServer.on("error", function (error) {
-      this.connected = "Connection error" + error;
-      console.log("Connection error");
-    });
-
-    this.rbServer.on(
-      "close",
-      function () {
-        this.connected = "Disconnected event";
-        console.log("Connection closed");
-      }.bind(this)
-    );
-
-    this.rbServer.on(
-      "connection",
-      function () {
-        console.log("Connected to ROS");
-        this.connected = "Connected";
-
-        // eslint-disable-next-line no-undef
-        this.cmdVel = new ROSLIB.Topic({
-          ros: this.rbServer,
-          name: "/cmd_vel",
-          messageType: "geometry_msgs/Twist",
-        });
-
-        this.cmdVel.subscribe(
-          function (message) {
-            console.log("Received message on " + ": " + message.data);
-          }.bind(this)
-        );
-
-        this.$store.dispatch("setCmdVel", this.cmdVel);
-
-        this.$store.commit("setRbServer", this.rbServer);
-
-        let std_out_topic = new ROSLIB.Topic({
-          ros: this.rbServer,
-          name: "/std_out",
-          messageType: "std_msgs/String",
-        });
-
-        std_out_topic.subscribe(
-          function (message) {
-            console.log("Received message on " + ": " + message.data);
-            if (message.data === "DONE") {
-              this.isRunning = false;
-              this.isProjectLoaded = false;
+                    this.$store.commit("setBlocklyXml", response.data);
+                    //Blockly.mainWorkspace.clear();
+                    //let textToDom = Blockly.Xml.textToDom(response.data);
+                    //Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, textToDom);
+                    //console.log(xml)
+                    //this.isProjectLoaded = true
+                });
+        },
+        // linkProperties(route) {
+        //   const routeName = route.name ? route.name : route
+        //   const externalRoute = this.externalRoutes.filter(
+        //     (r) => r.name === routeName,
+        //   )[0]
+        //   let url = externalRoute ? externalRoute.url : routeName
+        //   if (externalRoute || url.match(/^(http(s)?|ftp):\/\//)) {
+        //     if (route.query) {
+        //       url = `${url}?${$.param(route.query)}`
+        //     }
+        //     return {
+        //       is: 'a',
+        //       href: url,
+        //     }
+        //   }
+        //   return {
+        //     is: 'router-link',
+        //     to: {
+        //       name: url,
+        //       query: route.query,
+        //     },
+        //   }
+        // },
+        onForward: function () {
+            // var x = 0
+            var y = 0;
+            var z = 0;
+            var pub = true;
+            if (pub === true) {
+                // eslint-disable-next-line no-undef
+                var twist = new ROSLIB.Message({
+                    angular: {
+                        x: 0,
+                        y: 0,
+                        z: z,
+                    },
+                    linear: {
+                        x: 0.1,
+                        y: y,
+                        z: z,
+                    },
+                });
+                console.log(twist);
+                this.$store.getters.getCmdVel.publish(twist);
+                //console.log(this.cmdVel);
             }
-            this.$refs.trainLocalComponent.result += message.data + "<br />";
-          }.bind(this)
-        );
-
-        let std_out_python_topic = new ROSLIB.Topic({
-          ros: this.rbServer,
-          name: "/std_out_python",
-          messageType: "std_msgs/String",
-        });
-
-        std_out_python_topic.subscribe(
-          function (message) {
-            var d = new Date();
-            var n = d.getTime();
-            console.log("Received message on " + ": " + message.data);
-            if (message.data === "DONE") {
-              this.isProjectLoaded = false;
-              this.isRunning = false;
+        },
+        onBackward: function () {
+            // var x = 0
+            var y = 0;
+            var z = 0;
+            var pub = true;
+            if (pub === true) {
+                // eslint-disable-next-line no-undef
+                var twist = new ROSLIB.Message({
+                    angular: {
+                        x: 0,
+                        y: 0,
+                        z: z,
+                    },
+                    linear: {
+                        x: -0.1,
+                        y: y,
+                        z: z,
+                    },
+                });
+                console.log(twist);
+                this.$store.getters.getCmdVel.publish(twist);
+                //console.log(this.cmdVel);
             }
-            this.$refs.blocklyComponent.s_result =
-              n + ": " + message.data + "<br />";
-          }.bind(this)
+        },
+        onLeft: function () {
+            // var x = 0
+            var y = 0;
+            var z = 0;
+            var pub = true;
+            if (pub === true) {
+                // eslint-disable-next-line no-undef
+                var twist = new ROSLIB.Message({
+                    angular: {
+                        x: 0,
+                        y: 0,
+                        z: -0.3,
+                    },
+                    linear: {
+                        x: 0.1,
+                        y: y,
+                        z: z,
+                    },
+                });
+                console.log(twist);
+                this.$store.getters.getCmdVel.publish(twist);
+                //console.log(this.cmdVel);
+            }
+        },
+        onRight: function () {
+            // var x = 0
+            var y = 0;
+            var z = 0;
+            var pub = true;
+            if (pub === true) {
+                // eslint-disable-next-line no-undef
+                var twist = new ROSLIB.Message({
+                    angular: {
+                        x: 0,
+                        y: 0,
+                        z: 0.3,
+                    },
+                    linear: {
+                        x: 0.1,
+                        y: y,
+                        z: z,
+                    },
+                });
+                console.log(twist);
+                this.$store.getters.getCmdVel.publish(twist);
+                //console.log(this.cmdVel);
+            }
+        },
+        onCCW: function () {
+            // var x = 0
+            var y = 0;
+            var z = 0;
+            var pub = true;
+            if (pub === true) {
+                // eslint-disable-next-line no-undef
+                var twist = new ROSLIB.Message({
+                    angular: {
+                        x: 0,
+                        y: 0,
+                        z: 0.3,
+                    },
+                    linear: {
+                        x: 0,
+                        y: y,
+                        z: z,
+                    },
+                });
+                console.log(twist);
+                this.$store.getters.getCmdVel.publish(twist);
+                //console.log(this.cmdVel);
+            }
+        },
+        onCW: function () {
+            // var x = 0
+            var y = 0;
+            var z = 0;
+            var pub = true;
+            if (pub === true) {
+                // eslint-disable-next-line no-undef
+                var twist = new ROSLIB.Message({
+                    angular: {
+                        x: 0,
+                        y: 0,
+                        z: -0.3,
+                    },
+                    linear: {
+                        x: 0,
+                        y: y,
+                        z: z,
+                    },
+                });
+                console.log(twist);
+                this.$store.getters.getCmdVel.publish(twist);
+                //console.log(this.cmdVel);
+            }
+        },
+        getBlock() {},
+    },
+    mounted() {
+        this.$store.dispatch("regProjects");
+        //this.renderBlockly()
+        this.cmdVel = this.$store.getters.getCmdVel;
+        let uri = "getIP";
+        console.log("Start roslibjs");
+        // eslint-disable-next-line no-undef
+        this.rbServer = new ROSLIB.Ros();
+        this.rbServer.on("error", function (error) {
+            this.connected = "Connection error" + error;
+            console.log("Connection error");
+        });
+        this.rbServer.on(
+            "close",
+            function () {
+                this.connected = "Disconnected event";
+                console.log("Connection closed");
+            }.bind(this)
         );
-      }.bind(this)
-    );
-
-    axiosInstance.get(uri, axios_options).then((response) => {
-      this.rbServer.connect("ws://" + response.data.IP + ":9090");
-      console.log("ROS IP = " + response.data.IP);
-    });
-  },
+        this.rbServer.on(
+            "connection",
+            function () {
+                console.log("Connected to ROS");
+                this.connected = "Connected";
+                // eslint-disable-next-line no-undef
+                this.cmdVel = new ROSLIB.Topic({
+                    ros: this.rbServer,
+                    name: "/cmd_vel",
+                    messageType: "geometry_msgs/Twist",
+                });
+                this.cmdVel.subscribe(
+                    function (message) {
+                        console.log("Received message on " + ": " + message.data);
+                    }.bind(this)
+                );
+                this.$store.dispatch("setCmdVel", this.cmdVel);
+                this.$store.commit('setRbServer', this.rbServer)
+                let std_out_topic = new ROSLIB.Topic({
+                    ros: this.rbServer,
+                    name: "/std_out",
+                    messageType: "std_msgs/String",
+                });
+                std_out_topic.subscribe(
+                    function (message) {
+                        console.log("Received message on " + ": " + message.data);
+                        if (message.data === 'DONE') {
+                            this.isRunning = false;
+                            this.isProjectLoaded = false;
+                        }
+                        this.$refs.trainLocalComponent.result += message.data + '<br />'
+                    }.bind(this)
+                );
+                let std_out_python_topic = new ROSLIB.Topic({
+                    ros: this.rbServer,
+                    name: "/std_out_python",
+                    messageType: "std_msgs/String",
+                });
+                std_out_python_topic.subscribe(
+                    function (message) {
+                        var d = new Date()
+                        var n = d.getTime()
+                        console.log("Received message on " + ": " + message.data);
+                        if (message.data === 'DONE') {
+                            this.isProjectLoaded = false;
+                            this.isRunning = false;
+                        }
+                        this.$refs.blocklyComponent.s_result = n + ": " + message.data + '<br />'
+                    }.bind(this)
+                );
+            }.bind(this)
+        );
+        axiosInstance.get(uri, axios_options).then((response) => {
+            this.rbServer.connect("ws://" + response.data.IP + ":9090");
+            console.log("ROS IP = " + response.data.IP);
+        });
+    },
   computed: {
     ...mapGetters([
       "getProjectDir",
