@@ -26,93 +26,35 @@
                     <p class="display-image">
                         <b-img ref="displayImage" src=""> </b-img>
                     </p>
-                    <!--<b-button
-              v-if="isRunHiden"
-              :disabled="isProjectLoaded"
-              variant="danger"
-              pill
-              v-on:click="showCode"
-              style="padding-left: 16px;padding-right: 16px;"
-              class="btn-space"
-          >
-              Run
-          </b-button>
-          <b-button
-              v-if="isRunHiden"
-              :disabled="!isProjectLoaded"
-              variant="success"
-              pill
-              v-on:click="stopRun"
-              style="padding-left: 16px;padding-right: 16px;"
-              class="btn-space"
-          >
-              Stop
-          </b-button>-->
+                    
                     <div v-if="isRunning" class="control">
                         <b-form-checkbox class="check" v-model="nDisplay" name="check-button" switch>
                             Detector: {{ nDisplay }}
                         </b-form-checkbox>
-                        <!-- <div class="stop">
-              Stop
-              <button
-                :disabled="!isProjectLoaded"
-                pill
-                v-on:click="$emit('stopRun')"
-                class="btn-stop"
-              >
-                <img src="../assets/UI/svg/pause.svg" alt="" srcset="" />
-              </button>
-            </div> -->
-                    <!--<div class="btn-base open" v-b-modal.expanded-camera>
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-                            <g>
-                                <g>
-                                    <path d="M208,448h-98.752l90.176-90.176c6.24-6.24,6.24-16.384,0-22.624L176.8,312.576c-6.24-6.24-16.384-6.24-22.624,0    L64,402.752V304c0-8.832-7.168-16-16-16H16c-8.832,0-16,7.168-16,16v192c0,8.832,7.168,16,16,16h192c8.832,0,16-7.168,16-16v-32    C224,455.168,216.832,448,208,448z"/>
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M496,0H304c-8.832,0-16,7.168-16,16v32c0,8.832,7.168,16,16,16h98.752l-90.176,90.176c-6.24,6.24-6.24,16.384,0,22.624    l22.624,22.624c6.24,6.24,16.384,6.24,22.624,0L448,109.248V208c0,8.832,7.168,16,16,16h32c8.832,0,16-7.168,16-16V16    C512,7.168,504.832,0,496,0z"/>
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M496,288h-32c-8.832,0-16,7.168-16,16v98.752l-90.176-90.176c-6.24-6.24-16.384-6.24-22.624,0L312.576,335.2    c-6.24,6.24-6.24,16.384,0,22.624L402.752,448H304c-8.832,0-16,7.168-16,16v32c0,8.832,7.168,16,16,16h192c8.832,0,16-7.168,16-16    V304C512,295.168,504.832,288,496,288z"/>
-                                </g>
-                            </g>
-                            <g>
-                                <g>
-                                    <path d="M208,0H16C7.168,0,0,7.168,0,16v192c0,8.832,7.168,16,16,16h32c8.832,0,16-7.168,16-16v-98.752l90.176,90.176    c6.24,6.24,16.384,6.24,22.624,0l22.624-22.624c6.24-6.24,6.24-16.384,0-22.624L109.248,64H208c8.832,0,16-7.168,16-16V16    C224,7.168,216.832,0,208,0z"/>
-                                </g>
-                            </g>
-                        </svg> 
-                    </div>-->
+                        
                     </div>
                 </div>
+            </div>           
+        </div>
+        <b-modal id="expanded-camera" size="xl" title="Live view">
+            <div class="display-image">
+                <b-img ref="displayImage" src=""> </b-img>
+                <div v-if="!isRunning" class="control">
+                    <b-form-checkbox class="check" v-model="nDisplay" name="check-button" switch>
+                        Detector: {{ nDisplay }}
+                    </b-form-checkbox>
+                </div>
             </div>
-            <!-- <div class="next op-btn">
-            <span>CAPTURE</span>
-            <span class="ico"><img src="../assets/UI/svg/up-arrow.svg" alt="" srcset="" /></span>
-        </div> -->
-        </div>        
+            <div class="result">
+                <div class="bg-secondary text-light px-3 py-2 scroll-box" ref="logsBox">
+                    training results:<br />
+                    <div v-html="result" />
+                    <div v-html="logs" />
+                </div>
+            </div>
+        </b-modal>
     </div>
-</div>
-<!--<b-col sm="4">
-        <b-row>
-            <b-container fluid> Camera view </b-container>
-        </b-row>
-        <b-row>
-            <b-container fluid>
-                <b-img ref="displayImage" center src="" style="margin-top: 1px;width: 95%;"> </b-img>
-            </b-container>
-        </b-row>
-
-        <b-row>
-            <b-form-checkbox v-model="nDisplay" name="check-button" switch>
-                Switch Checkbox <b>(Checked: {{ nDisplay }})</b>
-            </b-form-checkbox>
-        </b-row>
-    </b-col>-->
+</div>    
 </template>
 
 <script>

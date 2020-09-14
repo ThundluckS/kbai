@@ -2,15 +2,12 @@
   <div style="height: 100vh; width: 100vw;">
       <loading :active.sync="isLoading" 
         :can-cancel="false" 
-        :is-full-page="fullPage">
-      </loading>        
-      <div class="train-panel">
-        <button class="btn btn-option train" @click="onTrain()">          
-          {{ isTraining ? "Train" : "Training" }}
-          <b-spinner v-if="loading" small center type="grow"></b-spinner>
-        </button>
-        <button class="btn btn-option test" :disabled="!testable" @click="onTest">Test</button>        
-      </div>
+        :is-full-page="fullPage"></loading>
+        <div class="train-panel">
+        <button class="btn btn-option train" @click="onTrain()"></button>
+        <button class="btn btn-option test" :disabled="!testable" @click="onTest">Test</button>
+        <button class="btn btn-option submit" @click="exportToServer"></button>
+      </div> 
 
     <b-card no-body class="train-pgr">
       <div class="bg-secondary text-light px-3 py-2 scroll-box" ref="logsBox">
@@ -20,9 +17,11 @@
       </div>
     </b-card> 
 
-  	<b-modal id="test-result" size="xl" title="Detected image" ok-only ok-variant="secondary" ok-title="Dismiss" >
+  	 <b-modal id="test-result" size="xl" title="Detected image" ok-only ok-variant="secondary" ok-title="Dismiss" >
 			<img :src="imageData" />
-	  </b-modal>
+	 </b-modal>
+
+
   </div>
 
 
@@ -67,7 +66,13 @@ export default {
     };
   },
   
-  methods: {    
+  methods: {
+    onCreate: () => {
+      window.open(
+        "https://colab.research.google.com/drive/1aG7kNzByeqW2fvWWHT5fM4Nmpt48nt8J",
+        "_blank"
+      );
+    },
     prepareData: function() {
       this.result += `Preparing data ... <br />`;
       return axiosInstance.post(
@@ -89,7 +94,7 @@ export default {
     },
     getLogs: function() {
       return axios.get(`${this.url}/train/log`);
-    },       
+    },   
     onTest:  function() {
       console.log("Now loading!!!!")
       this.isLoading = true;
@@ -105,8 +110,10 @@ export default {
 
             //const urlCreator = window.URL || window.webkitURL;
             //var b64Response = btoa(unescape(encodeURIComponent(response.data)))
-            var str = response.data.ImageBytes                
-              //this.imageData = url.createObjectURL(blob);
+            var str = response.data.ImageBytes        
+             
+            //this.imageData = url.createObjectURL(blob);
+
           this.isLoading = false;
               
                 var base64data = str;    
@@ -116,8 +123,8 @@ export default {
                    this.imageData = 'data:image/png;base64,' + base64data;
               console.log("get response")
               this.showModal = true
-              this.$root.$emit('bv::show::modal', 'test-result')      
-                                 
+              this.$root.$emit('bv::show::modal', 'test-result')  
+                                
             //this.imageData = 'data:image/png;base64,' + b64Response;
             //this.imageData = urlCreator.createObjectURL(blob);
 
@@ -129,15 +136,22 @@ export default {
     },
     onTrain: async function() {
       this.isLoading = true;
-        axiosInstance.post("/upload", {
-          projectpath: this.$store.state.projectDir
-        }).then((response) => {
-          console.log(response.data.status);
-          this.isDone = true
-          this.isLoading = false;  
-          this.fullPage = false;      
-        });
-    },    
+            axiosInstance.post("/upload", {
+                projectpath: this.$store.state.projectDir
+            }).then((response) => {
+                console.log(response.data.status);
+                this.isDone = true
+                this.isLoading = false;
+                
+
+            });
+    },
+    async exportToServer(){
+            window.open(
+                "https://sharebox.nstda.or.th/drive/group-public/G5f59ac09b6c50/home%2FOnlineTraining",
+                "_blank"
+            );
+        },
   },
   directives: {},
   mounted() {
@@ -170,9 +184,6 @@ export default {
     downloadable: function() {
       return this.isDone && !this.isDownloading;
     },
-    testable: function(){
-      return this.isDone;
-    },
   },
 };
 </script>
@@ -196,7 +207,7 @@ $primary-color: #007e4e;
   margin-left: 10px !important;
   border-radius: 10px !important;
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.7;
   }
 }
 .btn-option {
@@ -205,19 +216,21 @@ $primary-color: #007e4e;
   background-size: cover;
   margin-left: 30px !important;
   border-radius: 10px !important;
-  width: 45%;
+  width: 330px;
   height: 60px;
   cursor: pointer;
   &:disabled {
-    opacity: 0.5;
-    // background-color: rgba(0, 0, 0, 0.2);
+    opacity: 0.5;    
   }
   &.train {
-    background-image: url("../assets/UI/png/Group 40.png");
+    background-image: url("../assets/UI/png/Group 41.png");
   }
   &.test {
-    background-image: url("../assets/UI/png/Group 48.png");
-  }  
+    background-image: url("../assets/UI/png/Group 42.png");
+  }
+  &.submit {
+    background-image: url("../assets/UI/png/Group 43.png");
+  }
 }
 .train-pgr {
   border: none !important;

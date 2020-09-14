@@ -45,7 +45,7 @@
         </div>
       </div>
       <p class="btn-start">
-        <span v-if="isLoading" class="active">WAITING ...</span>
+        <span v-if="isLoading" class="active">LOADING...</span>        
         <router-link v-if="!isLoading" v-on:click="isInsert = true" to="/home" >LET'S START!</router-link><!--v-if="!isLoading" v-on:click="isInsert = true"-->
       </p>
     </div>
@@ -289,7 +289,7 @@
         </p>
       </div>
       <div class="hint-txt">
-        เริ่มต้นการใช้งานโดยนำ
+        เริ่มต้นการใช้งานโดยกดปุ่ม
         <span class="img">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -347,7 +347,6 @@
           </svg>
         </span>
       </div>      
-    </div>
     <svg
       class="bg-shadow"
       xmlns="http://www.w3.org/2000/svg"

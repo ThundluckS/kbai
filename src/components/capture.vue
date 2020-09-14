@@ -1,57 +1,40 @@
 <template>
 <div class="w-100 h-100">
-        <div class="vld-parent">
-        <loading :active.sync="isLoading" 
-        :can-cancel="true" 
-        :is-full-page="fullPage"></loading>
-    <div class="d-flex w-100 h-100 outer-wrap">
-        <div class="d-flex flex-fill flex-column main-panel" style="background-color:white;">
-            <div class="d-flex flex-fill align-items-center justify-content-center">
-                <div class="row">
-                    <b-col md="auto">
-                        <div class="image-container">
-                            <!--<b-img crossorigin="anonymous" ref="displayImage" style="margin-top: 10px; width: 100%;" :src="getImgSrc" alt="Center image"></b-img>-->
-                            <!-- <video id="webcam" autoplay playsinline width="640" height="480"></video>
-                            <canvas id="canvas" class="d-none"></canvas> -->
-                            <Camera ref="camera" width="640" height="480" />
-                            <!-- <audio id="snapSound" src="audio/snap.wav" preload="auto"></audio> -->
-                        </div>
-                    </b-col>
+    <div class="vld-parent">
+        <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>
+        <div class="d-flex w-100 h-100 outer-wrap">
+            <div class="d-flex flex-fill flex-column main-panel" style="background-color:white;">                
+                <div class="img-slider">
+                    <div :id="id" :class="{'img': true, 'active': imageActiveIndex === id }" v-for="(file, id) in images" :key="id" v-on:click="onSelect($event)">
+                        <img class="thumb" :src="file.file" alt="" srcset=""><img class="cancel-btn" src="../assets/UI/png/cancel.png" @click="deleteImage(id)" alt="" srcset="">
+                    </div>
                 </div>
             </div>
-            <div class="img-slider">                
-                <div :id="id" :class="{'img': true, 'active': imageActiveIndex === id }" v-for="(file, id) in images" :key="id" v-on:click="onSelect($event)">
-                    <img class="thumb" :src="file.file" alt="" srcset=""><img class="cancel-btn" src="../assets/UI/png/cancel.png" @click="deleteImage(id)" alt="" srcset="">
+            <div class="side-panel" style="width:300px;">
+                <!-- <div class="center">
+                    <img @click="takePhoto" v-on:click.prevent class="camera-btn op-btn" src="../assets/UI/png/Group 116.png" height="128" alt="" srcset="" />                    
+                </div> -->
+                <div class="center">
+                    <img v-b-modal.modal-1  class="camera-btn op-btn" src="../assets/UI/png/Group 120.png" height="128" alt="" srcset="" />                                
                 </div>
             </div>
         </div>
-        <div class="side-panel" style="width:300px;">
-            <!-- <div class="center">
-                <img @click="takePhoto" v-on:click.prevent class="camera-btn op-btn" src="../assets/UI/png/Group 116.png" height="128" alt="" srcset="" />                
-            </div> -->
-            <div class="center">
-                <img v-b-modal.modal-1  class="camera-btn op-btn" src="../assets/UI/png/Group 116.png" height="128" alt="" srcset="" />
-                <!-- <b-button v-b-modal.modal-1>Upload images</b-button> -->                
-            </div>            
-        </div>
+        <b-modal ref="capture-modal" hide-footer title="Using Component Methods">
+            <div class="d-block text-center">
+                <h3> New image has been captured!</h3>
+            </div>
+        </b-modal>
+
+        <b-modal ref="modal-1-ref" id="modal-1" title="Upload images" ok-only ok-variant="secondary" ok-title="Dismiss">
+            <div class="large-12 medium-12 small-12 cell">
+                <label>Files
+                    <input type="file" id="files" ref="files" accept="image/x-png,image/gif,image/jpeg" multiple v-on:change="handleFilesUpload()" />
+                </label>
+                <button v-on:click="submitFiles()" class="btn base-btn">Upload</button>
+            </div>
+        </b-modal>
+
     </div>
-    <b-modal ref="capture-modal" hide-footer title="Using Component Methods">
-        <div class="d-block text-center">
-            <h3> New image has been captured!</h3>
-        </div>
-    </b-modal>
-
-  
-    <b-modal ref="modal-1-ref" id="modal-1" title="Upload images"  ok-only ok-variant="secondary" ok-title="Dismiss" >
-        <div class="large-12 medium-12 small-12 cell">
-            <label>Files
-                <input type="file" id="files" ref="files" accept="image/x-png,image/gif,image/jpeg" multiple v-on:change="handleFilesUpload()" />
-            </label>
-            <button v-on:click="submitFiles()" class="btn btn-primary new-label">Submit</button>
-        </div>
-    </b-modal>
-
-</div>
 </template>
 
 <script>
@@ -90,8 +73,8 @@ var axiosInstance = axios.create({
 export default {
     name: "Capture",
     components: {
-         Loading,
-         Camera
+        Loading,
+        Camera
     },
     props: {},
     created() {},
@@ -135,7 +118,6 @@ export default {
                 formData.append('files[' + i + ']', file);
             }
 
-            
             formData.append('projectpath', this.$store.getters.getProjectDir);
             console.log("This is a list")
             console.log(formData)
@@ -145,7 +127,7 @@ export default {
             */
             this.$refs['modal-1-ref'].hide()
             this.isLoading = true
-            console.log(this.isLoading )
+            console.log(this.isLoading)
             axios.post('/multiple-files',
                     formData, {
                         headers: {
@@ -154,6 +136,28 @@ export default {
                     }
                 ).then(function () {
                     console.log('SUCCESS!!');
+                    axiosInstance.post("/getFiles", {
+                        path: this.$store.state.projectDir
+                    }).then((response) => {
+                        console.log(response.data.files);
+                        while (this.images.length) {
+                            this.images.pop();
+                        }
+                        var info = response.data.files
+                        var index, len
+                        for (index = 0, len = info.length; index < len; ++index) {
+                            var imPath =
+
+                                '/' +
+                                info[index].file
+                            this.images.push({
+                                fileName: info[index].file,
+                                file: imPath,
+                                id: info[index].id,
+                            })
+                        }
+
+                    });
                     this.isLoading = false
                 }.bind(this))
                 .catch(function () {
@@ -336,156 +340,6 @@ export default {
             return (this.selectedIndx = index);
 
         },
-        onForward: function () {
-            // var x = 0;
-            var y = 0;
-            var z = 0;
-            var pub = true;
-            if (pub === true) {
-                // eslint-disable-next-line no-undef
-                var twist = new ROSLIB.Message({
-                    angular: {
-                        x: 0,
-                        y: 0,
-                        z: z,
-                    },
-                    linear: {
-                        x: 0.1,
-                        y: y,
-                        z: z,
-                    },
-                });
-                console.log(twist);
-
-                this.cmdVel.publish(twist);
-                console.log(this.cmdVel);
-            }
-        },
-        onBackward: function () {
-            // var x = 0;
-            var y = 0;
-            var z = 0;
-            var pub = true;
-            if (pub === true) {
-                // eslint-disable-next-line no-undef
-                var twist = new ROSLIB.Message({
-                    angular: {
-                        x: 0,
-                        y: 0,
-                        z: z,
-                    },
-                    linear: {
-                        x: -0.1,
-                        y: y,
-                        z: z,
-                    },
-                });
-                console.log(twist);
-
-                this.cmdVel.publish(twist);
-                console.log(this.cmdVel);
-            }
-        },
-        onLeft: function () {
-            // var x = 0;
-            var y = 0;
-            var z = 0;
-            var pub = true;
-            if (pub === true) {
-                // eslint-disable-next-line no-undef
-                var twist = new ROSLIB.Message({
-                    angular: {
-                        x: 0,
-                        y: 0,
-                        z: -0.3,
-                    },
-                    linear: {
-                        x: 0.1,
-                        y: y,
-                        z: z,
-                    },
-                });
-                console.log(twist);
-
-                this.cmdVel.publish(twist);
-                console.log(this.cmdVel);
-            }
-        },
-        onRight: function () {
-            // var x = 0;
-            var y = 0;
-            var z = 0;
-            var pub = true;
-            if (pub === true) {
-                // eslint-disable-next-line no-undef
-                var twist = new ROSLIB.Message({
-                    angular: {
-                        x: 0,
-                        y: 0,
-                        z: 0.3,
-                    },
-                    linear: {
-                        x: 0.1,
-                        y: y,
-                        z: z,
-                    },
-                });
-                console.log(twist);
-
-                this.cmdVel.publish(twist);
-                console.log(this.cmdVel);
-            }
-        },
-        onCCW: function () {
-            // var x = 0;
-            var y = 0;
-            var z = 0;
-            var pub = true;
-            if (pub === true) {
-                // eslint-disable-next-line no-undef
-                var twist = new ROSLIB.Message({
-                    angular: {
-                        x: 0,
-                        y: 0,
-                        z: 0.3,
-                    },
-                    linear: {
-                        x: 0,
-                        y: y,
-                        z: z,
-                    },
-                });
-                console.log(twist);
-
-                this.cmdVel.publish(twist);
-                console.log(this.cmdVel);
-            }
-        },
-        onCW: function () {
-            // var x = 0;
-            var y = 0;
-            var z = 0;
-            var pub = true;
-            if (pub === true) {
-                // eslint-disable-next-line no-undef
-                var twist = new ROSLIB.Message({
-                    angular: {
-                        x: 0,
-                        y: 0,
-                        z: -0.3,
-                    },
-                    linear: {
-                        x: 0,
-                        y: y,
-                        z: z,
-                    },
-                });
-                console.log(twist);
-
-                this.cmdVel.publish(twist);
-                console.log(this.cmdVel);
-            }
-        },
     },
 
     directives: {},
@@ -540,6 +394,14 @@ $primary-color: #007e4e;
     }
 }
 
+.base-btn {
+  color: white;
+  background-color: $primary-color;
+  margin-right: 10px !important;
+  border-radius: 10px !important;
+  width: 20%;  
+}
+
 .side-panel {
     padding: 15px;
     display: flex;
@@ -547,6 +409,7 @@ $primary-color: #007e4e;
     justify-content: flex-end;
     align-items: center;
     width: 300px;
+    margin-bottom: 30px;
 
     .next {
         height: 50px;
@@ -572,66 +435,6 @@ $primary-color: #007e4e;
     }
 }
 
-/*.slick-slider {
-    width: 500px;
-    flex: 1 1 auto;
-
-    .item-slider {
-        position: relative;
-        opacity: 0.7;
-        transition: opacity 0.3s ease-in;
-        cursor: pointer;
-
-        &.active,
-        &:hover {
-            opacity: 1;
-        }
-
-        &.active::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 100%;
-            border: 5px solid $primary-color;
-            border-radius: 25px;
-            pointer-events: none;
-        }
-    }
-
-    div {
-        outline: none;
-    }
-
-    .img {
-        background-color: #2f3241;
-        height: 160px;
-        margin: 3px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 20px;
-        overflow: hidden;
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-    }
-
-    ::v-deep .slick-arrow:before {
-        color: #2f3241;
-        font-size: 33px;
-        transition: opacity 0.3s ease-in;
-    }
-
-    ::v-deep .slick-prev {
-        left: -40px;
-    }
-}*/
-
 #logo .fa-icon {
     position: absolute;
     top: 50%;
@@ -653,9 +456,10 @@ $primary-color: #007e4e;
 
 .img-slider {
     display: -webkit-box;
+    flex-wrap: wrap;
     width: 100%;
-    overflow-x: scroll;
-    height: 180px;
+    height: 100%;
+    overflow-y: scroll;    
     position: relative;
     padding-top: 6px;
     margin: 20px;
@@ -664,7 +468,7 @@ $primary-color: #007e4e;
         background-color: #2f3241;
         height: 160px;
         width: 160px;
-        margin: 0 5px;
+        margin: 5px 5px;
         display: flex;
         align-items: center;
         justify-content: center;

@@ -1,25 +1,18 @@
 <template>
 <div>
+    <loading :active.sync="isLoading" 
+        :can-cancel="false" 
+        :is-full-page="fullPage"></loading>
     <div class="container-fluid vh-100 d-flex main-bg">
         <div class="left-panel d-flex flex-column">
             <div class="l-title font-weight-bold">KidBright AI</div>
             <div class="d-inline-flex flex-wrap menu-starter">
-                <div class="btn-base new" data-md-tooltip="สร้าง Project ใหม่" v-on:click="selectedMenu = 1" v-b-modal.modal-prevent-closing />
-                <div data-md-tooltip="เปิด Project ที่เคยสร้างไว้แล้ว" class="btn-base open" v-on:click="getAllProjects" v-b-modal.modal_list_files />
-                <!-- <b-button v-on:click="deleteProject" v-b-modal.modal_list_delete_files
-            >Delete</b-button
-          > -->
-                <!-- <b-button
-            variant="info"
-            @click="loadAllFromUSB"
-            :disabled="isLoading || isSaving"
-          >
-            <b-spinner v-if="isLoading" small></b-spinner> Import
-          </b-button> -->
+                <div class="btn-base new" data-md-tooltip="สร้าง Project ใหม่" v-on:click="selectedMenu = 1" v-b-modal.modal-prevent-closing :disabled="isLoading || isSaving"/>
+                <div data-md-tooltip="นำเข้า Project จาก Google Drive" class="btn-base import" variant="danger" @click="ejectUSB" v-b-modal.gs_modal_list_files :disabled="isLoading || isSaving" />
+                <div data-md-tooltip="เปิด Project ที่เคยสร้างไว้แล้ว" class="btn-base open" v-on:click="getAllProjects" v-b-modal.modal_list_files :disabled="isLoading || isSaving" />                
                 <div data-md-tooltip="บันทึกข้อมูล" class="btn-base save" variant="success" @click="saveToUSB" :disabled="isLoading || isSaving">
                     <b-spinner v-if="isSaving" small />
-                </div>
-                <div data-md-tooltip="อัพโหลดโมเดลส่งเข้าระบบ" class="btn-base export" variant="danger" @click="exportToServer" :disabled="isLoading || isSaving" />
+                </div>                
             </div>
             <div class="left-bottom-content d-flex flex-fill">
                 <div class="proj-name">
@@ -45,75 +38,39 @@
                     {{ getProjectDir }}
                 </div>
                 <ul v-show="getProjectDir !== 'None'" class="step">
-                    <!--v-show="getProjectDir !== 'None'"-->
+                    <!--v-show="getProjectDir !== 'None'"-->                    
                     <li v-bind:class="{ current: selectedMenu == 1 }" v-on:click="
                 selectedMenu = 1;
                 handleTabChange(selectedMenu);
               ">
-                        <img src="../assets/UI/svg/Group 13.svg" alt="" srcset="" />
-                    </li>
-                    <li v-bind:class="{ current: selectedMenu == 2 }" v-on:click="
-                selectedMenu = 2;
-                handleTabChange(selectedMenu);
-              ">
                         <img src="../assets/UI/svg/Group 88.svg" alt="" srcset="" />
                     </li>
-                    <li v-bind:class="{ current: selectedMenu == 3, inactive: !hasImage }" v-on:click="
+                    <li v-bind:class="{ current: selectedMenu == 2, inactive: !hasImage }" v-on:click="
                 if (hasImage) {
-                  selectedMenu = 3;
+                  selectedMenu = 2;
                   handleTabChange(selectedMenu);
                 }
               ">
                         <img src="../assets/UI/svg/Group 90.svg" alt="" srcset="" />
                     </li>
-                    <li v-bind:class="{
-                current: selectedMenu == 4,
-                inactive: !finishAnnotation,
-              }" v-on:click="
+                    <li v-bind:class="{ current: selectedMenu == 3, inactive: !finishAnnotation, }" v-on:click="
                 if (finishAnnotation) {
-                  selectedMenu = 4;
+                  selectedMenu = 3;
                   handleTabChange(selectedMenu);
                 }
               ">
                         <img src="../assets/UI/svg/Group 89.svg" alt="" srcset="" />
                     </li>
+                    <li v-bind:class="{ current: selectedMenu == 4 }" v-on:click="
+                selectedMenu = 4;
+                handleTabChange(selectedMenu);
+              ">
+                        <img src="../assets/UI/svg/Group 13.svg" alt="" srcset="" />
+                    </li>
                 </ul>
                 <div v-if="getTrainingType === 'None'" class="hint">
                     <div class="main-hint txt" v-bind:class="{ notype: getTrainingType === 'None' }">
-                        <!-- <ul class="btn-desc">
-                <li>
-                  <span
-                    ><img
-                      src="../assets/UI/svg/Path 216.svg"
-                      alt=""
-                      srcset=""/></span
-                  >สร้าง Project ใหม่
-                </li>
-                <li>
-                  <span
-                    ><img
-                      src="../assets/UI/svg/internet.svg"
-                      alt=""
-                      srcset=""/></span
-                  >เปิด Project ที่เคยสร้างไว้แล้ว
-                </li>
-                <li>
-                  <span
-                    ><img
-                      src="../assets/UI/svg/internet-2.svg"
-                      alt=""
-                      srcset=""/></span
-                  >บันทึกข้อมูล
-                </li>
-                <li>
-                  <span
-                    ><img
-                      src="../assets/UI/svg/Path 217.svg"
-                      alt=""
-                      srcset=""/></span
-                  >นำ Thumb drive ออก
-                </li>
-              </ul> -->
+                        
                         <p>
                             เริ่มใช้งานโดยกด <img src="../assets/UI/png/Group -2.png" alt="" srcset="" />เพื่อทำการเลือก <span class="p-color">Object Detection</span> หรือ <span class="p-color">Image
                                 Classification</span><br><br>ในกรณีที่เลือก <span class="p-color">Object Detection</span>
@@ -127,63 +84,58 @@
                         <img v-if="!isRunning" src="../assets/UI/svg/Mask Group 1.svg" alt="" srcset="" />
                     </div>
                 </div>
-                <div v-if="getTrainingType !== 'None' && selectedMenu === 1" class="hint">
+                <div v-if="getTrainingType !== 'None' && selectedMenu === 4" class="hint">
                     <div class="main-hint txt">
-                        <p class="p-color font-weight-bold">ขั้นตอนที่ 1 Coding</p>
+                        <p class="p-color font-weight-bold">ขั้นตอนที่ 4 Coding</p>
                         <p>
-                            ขั้นตอนนี้ใช้สร้างชุดคำสั่งโดยการลากบล็อคคำสั่งจากแถบเครื่องมือ ในกรณีที่ยังไม่มีโมเดลรู้จำต้องการทำกระบวนการสร้างโมเดล โดยมีลำดับเริ่มจาก<br><span class="p-color">ขั้นตอนที่ 2 (Capture)</span> <br><span class="p-color">ขั้นตอนที่ 3 (Annotate)</span> <br><span class="p-color">ขั้นตอนที่ 4 (Training)</span>
-                        </p>
-                        <p class="p-color font-weight-bold"><br>ขั้นตอนถัดไปกดปุ่ม <img src="../assets/UI/svg/Group 95.svg" alt="" srcset="" /></p>
+                            ขั้นตอนนี้ใช้สร้างชุดคำสั่งโดยการลากบล็อคคำสั่งจากแถบเครื่องมือ ในกรณีที่ยังไม่มีโมเดลรู้จำต้องการทำกระบวนการสร้างโมเดล โดยมีลำดับเริ่มจาก<br><span class="p-color">ขั้นตอนที่ 1 (Capture)</span> <br><span class="p-color">ขั้นตอนที่ 2 (Annotate)</span> <br><span class="p-color">ขั้นตอนที่ 3 (Training)</span>
+                        </p>                        
                     </div>
                     <div class="mascot">
                         <img v-if="!isRunning" src="../assets/UI/svg/Mask Group 11.svg" alt="" srcset="" />
                         <img v-if="isRunning" src="../assets/UI/svg/Mask Group 10.svg" alt="" srcset="" />
                     </div>
                 </div>
+                <div v-if="getTrainingType !== 'None' && selectedMenu === 1" class="hint">
+                    <div class="main-hint txt">
+                        <p class="p-color font-weight-bold">ขั้นตอนที่ 1 Capture</p>
+                        <p>
+                            ขั้ขั้นตอนนี้เป็นการอัพโหลดภาพที่ต้องการใช้ในการเรียนรู้โมเดลปัญญาประดิษฐ์ โดยกดปุ่ม <img src="../assets/UI/svg/Group 120.svg" alt="" srcset="" /> เพื่ออัพโหลดภาพ (ควรใช้ภาพวัตถุในมุมต่างๆ ประมาณ 50 ภาพต่อวัตถุ หรือมากกว่า)</p>                        
+                    </div>
+                    <div class="mascot">
+                        <img src="../assets/UI/svg/Mask Group 11.svg" alt="" srcset="" />
+                    </div>
+                </div>
                 <div v-if="getTrainingType !== 'None' && selectedMenu === 2" class="hint">
                     <div class="main-hint txt">
-                        <p class="p-color font-weight-bold">ขั้นตอนที่ 2 Capture</p>
-                        <p>
-                            ขั้นตอนนี้เป็นการใช้งานกล้องในการเก็บภาพที่ต้องการ โดยกดปุ่ม <img src="../assets/UI/svg/Group 113.svg" alt="" srcset="" /> เพื่อถ่ายภาพ (ควรถ่ายภาพวัตถุในมุมต่างๆ ประมาณ 20 ภาพต่อวัตถุ หรือมากกว่า)</p>
-                        <p class="p-color font-weight-bold"><br>ขั้นตอนถัดไป
-                            กดปุ่ม <img src="../assets/UI/svg/Group -1.svg" alt="" srcset="" /></p>
-                    </div>
-                    <div class="mascot">
-                        <img src="../assets/UI/svg/Mask Group 11.svg" alt="" srcset="" />
-                    </div>
-                </div>
-                <div v-if="getTrainingType !== 'None' && selectedMenu === 3" class="hint">
-                    <div class="main-hint txt">
-                        <p class="p-color font-weight-bold">ขั้นตอนที่ 3 Annotate</p>
+                        <p class="p-color font-weight-bold">ขั้นตอนที่ 2 Annotate</p>
                         <p>ขั้นตอนนี้ใช้สำหรับกำหนดขอบเขตและระบุชื่อวัตถุ</p>
                         <p><br>1. กดปุ่ม <img src="../assets/UI/svg/Group 97.svg" alt="" srcset="" /> เพื่อตั้งชื่อใหม่ให้กับวัตถุจากนั้นกำหนดขอบเขตโดยให้วัตถุอยู่ภายในกรอบสี่เหลี่ยมที่กำหนด</p>
-                        <p><br>2. กดปุ่ม <img src="../assets/UI/svg/interface.svg" alt="" srcset="" /> เมื่อต้องการใช้ชื่อที่ตั้งไว้เเล้ว จะประกฏกรอบสี่เหลี่ยมขึ้นบนภาพ <img src="../assets/UI/svg/Group 96.svg" alt="" srcset="" /> จากนั้นกำหนดขอบเขตให้วัตถุ</p>
-                        <p class="p-color font-weight-bold"><br>ขั้นตอนถัดไป
-                            กดปุ่ม <img src="../assets/UI/svg/Group 115.svg" alt="" srcset="" /></p>
+                        <p><br>2. กดปุ่ม <img src="../assets/UI/svg/interface.svg" alt="" srcset="" /> เมื่อต้องการใช้ชื่อที่ตั้งไว้เเล้ว จะประกฏกรอบสี่เหลี่ยมขึ้นบนภาพ <img src="../assets/UI/svg/Group 96.svg" alt="" srcset="" /> จากนั้นกำหนดขอบเขตให้วัตถุ</p>                        
                     </div>
                     <div class="mascot">
                         <img src="../assets/UI/svg/Mask Group 11.svg" alt="" srcset="" />
                     </div>
                 </div>
-                <div v-if="getTrainingType === 'Image classification' && selectedMenu === 4" class="hint">
+                <div v-if="getTrainingType === 'Image classification' && selectedMenu === 3" class="hint">
                     <div class="main-hint txt">
-                        <p class="p-color font-weight-bold">ขั้นตอนที่ 4 Training<br>(Image Classification)</p>
+                        <p class="p-color font-weight-bold">ขั้นตอนที่ 3 Training<br>(Image Classification)</p>
                         <p>ขั้นตอนนี้เป็นการนำภาพที่ Annotate มาแล้วมาสร้างโมเดลรู้จำ</p>
-                        <p><br>1. กดปุ่ม <span class="p-color">Train</span> เพื่อสร้างโมเดล รอจนกระบวนการสร้างโมเดลแล้วเสร็จ</p>
-                        <p><br>2. กดปุ่ม <span class="p-color">Download</span> เมื่อเสร็จขั้นตอนนี้จะปรากฏบล็อคโมเดลขึ้นในขั้นตอนที่ 1 Coding</p>
+                        <p><br>1. กดปุ่ม <span class="p-color">Train</span> เพื่อสร้างโมเดลปัญญาประดิษฐ์ รอจนกระบวนการสร้างโมเดลแล้วเสร็จ</p>
+                        <p><br>2. กดปุ่ม <span class="p-color">Test</span> เพื่อทำการทดสอบโมเดลปัญญาประดิษฐ์ที่สร้างมา</p>
+                        <p><br>3. กดปุ่ม <span class="p-color">Submit model</span> เพื่อทำการส่งโมเดลปัญญาประดิษฐ์เข้าประกวด</p>
                     </div>
                     <div class="mascot">
                         <img src="../assets/UI/svg/Mask Group 11.svg" alt="" srcset="" />
                     </div>
                 </div>
-                <div v-if="getTrainingType === 'Object detection' && selectedMenu === 4" class="hint">
+                <div v-if="getTrainingType === 'Object detection' && selectedMenu === 3" class="hint">
                     <div class="main-hint txt">
-                        <p class="p-color font-weight-bold">ขั้นตอนที่ 4 Training<br>(Object Detection)</p>
+                        <p class="p-color font-weight-bold">ขั้นตอนที่ 3 Training<br>(Object Detection)</p>
                         <p>ขั้นตอนนี้เป็นการนาภาพที่ Annotate แล้วมาสร้างโมเดลรู้จา โดยใช้ Google Colab ในการสร้างโมเดล จึงจาเป็นต้องเชื่อมต่ออินเทอร์เน็ตให้เรียบร้อยก่อน</p>
-                        <p><br>1. เลือกหน้าเว็บ Colab ที่แสดงอยู่ด้านบน ทาการ login โดยใช้ Google Account ทาตามกระบวนการที่ปรากฏ เมื่อเสร็จสิ้นทาการคัดลอก URL</p>
-                        <p><br>2. เลือกหน้าเว็บ KidBright AI และนา URL ที่คัดลอกมาใส่ในกล่องสีเทา</p>
-                        <p><br>3. กดปุ่ม <span class="p-color">Train</span> เพื่อส่งภาพไปสร้างโมเดลที่ Colab รอจนกระบวนการสร้างโมเดลเสร็จสิ้น</p>
-                        <p><br>4. กดปุ่ม <span class="p-color">Download</span> เพื่อนาโมเดลจาก Colab มาเก็บที่ KidBright AI เมื่อเสร็จขั้นตอนนี้จะปรากฏบล็อกโมเดลขึ้นในขั้นตอนที่ 1 Coding</p>
+                        <p><br>1. กดปุ่ม <span class="p-color">Train</span> เพื่อสร้างโมเดลปัญญาประดิษฐ์ รอจนกระบวนการสร้างโมเดลแล้วเสร็จ</p>
+                        <p><br>2. กดปุ่ม <span class="p-color">Test</span> เพื่อทำการทดสอบโมเดลปัญญาประดิษฐ์ที่สร้างมา</p>
+                        <p><br>3. กดปุ่ม <span class="p-color">Submit model</span> เพื่อทำการนำส่งโมเดลปัญญาประดิษฐ์ที่สร้างมาเข้าสู่ระบบ KidBright AI (โปรดทำการ save project ก่อนนำส่งข้อมูล)</p>
                     </div>
                     <div class="mascot">
                         <img src="../assets/UI/svg/Mask Group 11.svg" alt="" srcset="" />
@@ -192,12 +144,12 @@
             </div>
         </div>
         <div class="content-panel d-flex flex-fill">
-            <BlocklyComponent ref='blocklyComponent' v-bind:is-running="isRunning" v-bind:is-project-loaded="isProjectLoaded" v-show="selectedMenu === 1" v-on:run="showCode()" v-on:stop-run="stopRun()" />
-            <Capture ref='captureComponent' v-show="selectedMenu === 2" />
-            <Anotate ref='anotateComponent' v-show="getTrainingType === 'Object detection' && selectedMenu === 3" />
-            <AnnotateForClassify ref='anotateForClassifyComponent' v-show="getTrainingType === 'Image classification' && selectedMenu === 3" />
-            <Train ref='trainComponent' v-show="getTrainingType === 'Object detection' && selectedMenu === 4" />
-            <TrainLocal ref='trainLocalComponent' v-show="getTrainingType === 'Image classification' && selectedMenu === 4" />
+            <BlocklyComponent ref='blocklyComponent' v-bind:is-running="isRunning" v-bind:is-project-loaded="isProjectLoaded" v-show="selectedMenu === 4" v-on:run="showCode()" v-on:stop-run="stopRun()" />
+            <Capture ref='captureComponent' v-show="selectedMenu === 1" />
+            <Anotate ref='anotateComponent' v-show="getTrainingType === 'Object detection' && selectedMenu === 2" />
+            <AnnotateForClassify ref='anotateForClassifyComponent' v-show="getTrainingType === 'Image classification' && selectedMenu === 2" />
+            <Train ref='trainComponent' v-show="getTrainingType === 'Object detection' && selectedMenu === 3" />
+            <TrainLocal ref='trainLocalComponent' v-show="getTrainingType === 'Image classification' && selectedMenu === 3" />
         </div>
         <!-- <div>Right Panel</div> -->
     </div>
@@ -241,31 +193,27 @@
         </b-table>
     </b-modal>
 
-    <b-modal id="modal_list_delete_files" title="Project list" @ok="handleProjectDelete">
-        <b-table show-empty striped hover stacked="md" caption-top selectable :select-mode="selectMode" selectedVariant="success" :items="projectsName" @row-selected="rowDeleteSelected" @row-clicked="rowDeleteClicked">
+    <b-modal id="gs_modal_list_files" ref="openModal" title="Import project from Google drive" @show="resetOpenModal" @hidden="resetOpenModal" @ok="gsImportProject">
+        <!--<div v-for="(item, index) in projectsName" :key="`fruit-${index}`">
+            {{ item }}
+        </div>-->
+        <b-dropdown id="dropdown-1" :text="
+            getTrainingType !== 'None'
+              ? getTrainingType
+              : 'Select trainning type'
+          " class="mode-select">
+            <b-dropdown-item @click="handleSelect('None')">None</b-dropdown-item>
+            <b-dropdown-item @click="handleSelect('Object detection')">Object detection</b-dropdown-item>
+            <!-- <b-dropdown-item @click="handleSelect('Image classification')">Image classification</b-dropdown-item> -->
+        </b-dropdown>
+        <b-table show-empty striped hover stacked="md" caption-top selectable :select-mode="selectMode" selectedVariant="success" :items="gsProjectsName" @row-selected="gsRowSelected" @row-clicked="gsRowClicked">
         </b-table>
     </b-modal>
 
-    <!-- <b-modal
-      id="modal_list_usb_directories"
-      title="Project list"
-      @ok="loadFromUSB"
-      :ok-disabled="!directorySelected"
-    >
-      <b-table
-        show-empty
-        striped
-        hover
-        stacked="md"
-        caption-top
-        selectable
-        :select-mode="selectMode"
-        selectedVariant="success"
-        :items="projectsfromUSB"
-        @row-selected="onSelectDirectory"
-      >
-      </b-table>
-    </b-modal> -->
+    <b-modal id="modal_list_delete_files" title="Project list" @ok="handleProjectDelete">
+        <b-table show-empty striped hover stacked="md" caption-top selectable :select-mode="selectMode" selectedVariant="success" :items="projectsName" @row-selected="rowDeleteSelected" @row-clicked="rowDeleteClicked">
+        </b-table>
+    </b-modal> 
 
     <b-modal ref="pyhonLoading" hide-footer title="Loading code">
         <div class="d-block text-center">
@@ -296,6 +244,11 @@ import "../prompt";
 //you can also import this in your style tag
 import "vue-nav-tabs/themes/vue-tabs.css";
 import "vue-awesome/icons";
+
+import Loading from 'vue-loading-overlay';
+// Import stylesheet
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 // import VIcon from 'vue-awesome/components/Icon'
 
 //import BlocklyJS from 'blockly/javascript';
@@ -325,6 +278,7 @@ export default {
         TrainLocal,
         // eslint-disable-next-line vue/no-unused-components
         BlocklyComponent,
+        Loading,
         // VIcon,
     },
     data: function () {
@@ -337,6 +291,7 @@ export default {
             nameState: null,
             projectDirIn: "",
             projectsName: [],
+            gsProjectsName: [],
             projectsfromUSB: [],
             directorySelected: null,
             deletingProject: null,
@@ -358,6 +313,7 @@ export default {
             isSaving: false,
             isLoading: false,
             rbServer: null,
+            gsSelectedProject: "",
         };
     },
     methods: {
@@ -370,7 +326,7 @@ export default {
                 "changeProjectDir",
                 this.projectsName[index].Projects
             );
-            this.$store.dispatch("reqImages");            
+            this.$store.dispatch("reqImages");
         },
         rowDeleteSelected(items) {
             //console.log(items)
@@ -383,6 +339,26 @@ export default {
                 this.projectsName[index].Projects
             );
             this.deletingProject = this.projectsName[index].Projects;
+        },
+        gsRowSelected(items) {
+            //console.log(items)
+            return (this.selected = items);
+        },
+        gsRowClicked: function (item, index) {
+            console.log(this.gsProjectsName[index].Projects)
+            this.gsSelectedProject = this.gsProjectsName[index].Projects
+        },
+        gsImportProject: function () {
+            this.isLoading = true;
+            axiosInstance
+                .post('importFromGoogleDrive', {
+                    projectName: this.gsSelectedProject
+                })
+                .then((response) => {
+                    console.log(response.data)
+                    this.isLoading = false;
+                    //this.isProjectLoaded = true
+                })
         },
         handleProjectDelete: function (bvModalEvt) {
             if (this.deletingProject === null) {
@@ -533,19 +509,24 @@ export default {
             }
         },
         async ejectUSB() {
-            const res = await axiosInstance.post("/ejectUSB");
-            if (res) {
-                this.$bvToast.toast(res.data.message, {
-                    title: "Success!",
-                    autoHideDelay: 3000,
-                });
+            const res = await axiosInstance.post("/gsGetProjects");
+            while (this.gsProjectsName.length) {
+                this.gsProjectsName.pop();
+
             }
-        },
-        async exportToServer(){
-            window.open(
-                "https://sharebox.nstda.or.th/drive/group-public/G5f59ac09b6c50/home%2FOnlineTraining",
-                "_blank"
+            if (res) {
+                console.log(res)
+            }
+            res.data.projects.forEach(
+                function (item) {
+                    this.gsProjectsName.push({
+                        Projects: item,
+                    });
+                }.bind(this)
             );
+
+            console.log(this.gsProjectsName)
+
         },
         checkFormValidity() {
             const valid = this.$refs.form.checkValidity();
@@ -606,16 +587,16 @@ export default {
         handleTabChange(tabIndex) {
             console.log("Tabindex = " + tabIndex);
             // Because without using v-tab, Then index start with 1
-            if (tabIndex == 1 && this.loaded == false) {
+            if (tabIndex == 4 && this.loaded == false) {
                 this.isRunHiden = false;
             }
-            if (tabIndex == 1) {
+            if (tabIndex == 4) {
                 this.isRunHiden = true;
             } else {
                 this.isRunHiden = false;
             }
 
-            if (tabIndex == 3) {
+            if (tabIndex == 2) {
 
                 if (this.$store.getters.getTrainingType === 'Image classification') {
 
@@ -631,7 +612,7 @@ export default {
                         var index, len
                         for (index = 0, len = info.length; index < len; ++index) {
                             var imPath =
-         
+
                                 '/' +
                                 info[index].file
                             this.$refs.anotateForClassifyComponent.images.push({
@@ -679,7 +660,7 @@ export default {
                         console.log(info.length)
                         for (index = 0, len = info.length; index < len; ++index) {
                             var imPath =
-   
+
                                 '/' +
                                 info[index].file
                             this.$refs.anotateComponent.images.push({
@@ -719,7 +700,7 @@ export default {
 
             }
 
-            if (tabIndex == 2) {
+            if (tabIndex == 1) {
                 axiosInstance.post("/getFiles", {
                     path: this.$store.state.projectDir
                 }).then((response) => {
@@ -745,7 +726,7 @@ export default {
 
             }
 
-            if (tabIndex == 4) {
+            if (tabIndex == 3) {
 
                 this.$refs.trainLocalComponent.result = ""
                 if (this.$store.getters.getTrainingType === 'Image classification') {
@@ -756,7 +737,7 @@ export default {
 
                     });
                 } else {
-                    
+
                 }
             }
         },
@@ -913,7 +894,6 @@ export default {
                 //console.log(this.cmdVel);
             }
         },
-
         onBackward: function () {
             // var x = 0
             var y = 0;
@@ -964,7 +944,6 @@ export default {
                 //console.log(this.cmdVel);
             }
         },
-
         onRight: function () {
             // var x = 0
             var y = 0;
@@ -1015,7 +994,6 @@ export default {
                 //console.log(this.cmdVel);
             }
         },
-
         onCW: function () {
             // var x = 0
             var y = 0;
@@ -1205,6 +1183,7 @@ ul {
 
 .container-fluid {
     padding: 0;
+    overflow-y: auto;
 }
 
 .main-bg {
@@ -1213,7 +1192,7 @@ ul {
 
 .content-panel {
     overflow-y: auto;
-    width: calc(100% - 320px);
+    width: calc(100% - 320px)
 }
 
 .left-panel {
@@ -1356,25 +1335,28 @@ ul {
         background-size: cover;
         cursor: pointer;
 
-        &:hover {}
+        &:hover {
+            outline: solid 3px $primary-color;
+        }
 
         &.new {
             background-image: url("../assets/UI/png/Group 105.png");
         }
 
         &.open {
-            background-image: url("../assets/UI/png/Group 118.png");
+            background-image: url("../assets/UI/png/Group 106.png");
         }
 
         &.save {
-            background-image: url("../assets/UI/png/Group 119.png");
+            background-image: url("../assets/UI/png/Group 107.png");
         }
 
         &.eject {
             background-image: url("../assets/UI/png/Group 108.png");
         }
-        &.export {
-            background-image: url("../assets/UI/png/Group 117.png");
+
+        &.import {
+            background-image: url("../assets/UI/png/Group 121.png");
         }
     }
 }
