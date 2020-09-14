@@ -1042,7 +1042,7 @@ body {
 .image-container {
   position: relative;
   width: 100%;
-  height: calc(100% - 180px);
+  overflow-y: auto
 }
 
 .image-container .after {

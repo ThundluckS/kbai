@@ -20,7 +20,7 @@
             data-md-tooltip="นำเข้า Project จาก Google Drive"
             class="btn-base import"
             variant="danger"
-            @click="ejectUSB"
+            @click="importProject"
             v-b-modal.gs_modal_list_files
             :disabled="isLoading || isSaving"
           />
@@ -489,11 +489,12 @@
       title="Import project from Google drive"
       @show="resetOpenModal"
       @hidden="resetOpenModal"
-      @ok="gsImportProject"
+      @ok="gsEventProject"
     >
       <!--<div v-for="(item, index) in projectsName" :key="`fruit-${index}`">
             {{ item }}
         </div>-->
+        <p class="p-notice-color small">* กรุณาเลือกประเภทโปรเจค</p>
       <b-dropdown
         id="dropdown-1"
         :text="
@@ -507,6 +508,7 @@
         >
         <!-- <b-dropdown-item @click="handleSelect('Image classification')">Image classification</b-dropdown-item> -->
       </b-dropdown>
+      <p class="p-color small">เลือกโปรเจคที่ต้องการนำเข้าข้อมูล </p>
       <b-table
         show-empty
         striped
@@ -681,6 +683,12 @@ export default {
       console.log(this.gsProjectsName[index].Projects);
       this.gsSelectedProject = this.gsProjectsName[index].Projects;
     },
+    gsEventProject(bvModalEvt) {
+      // Prevent modal from closing
+      bvModalEvt.preventDefault();
+      // Trigger submit handler
+      this.gsImportProject();
+    },
     gsImportProject: function () {
       this.isLoading = true;
       axiosInstance
@@ -841,7 +849,7 @@ export default {
           });
       }
     },
-    async ejectUSB() {
+    async importProject() {
       const res = await axiosInstance.post("/gsGetProjects");
       while (this.gsProjectsName.length) {
         this.gsProjectsName.pop();
