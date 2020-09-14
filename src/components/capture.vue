@@ -462,6 +462,7 @@ $primary-color: #007e4e;
     overflow-y: scroll;    
     position: relative;
     padding-top: 6px;
+    padding-bottom: 6px;
     margin: 20px;
 
     .img {

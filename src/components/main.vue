@@ -43,7 +43,7 @@
                 selectedMenu = 1;
                 handleTabChange(selectedMenu);
               ">
-                        <img src="../assets/UI/svg/Group 88.svg" alt="" srcset="" />
+                        <img src="../assets/UI/png/Group 88.svg" alt="" srcset="" />
                     </li>
                     <li v-bind:class="{ current: selectedMenu == 2, inactive: !hasImage }" v-on:click="
                 if (hasImage) {
@@ -51,7 +51,7 @@
                   handleTabChange(selectedMenu);
                 }
               ">
-                        <img src="../assets/UI/svg/Group 90.svg" alt="" srcset="" />
+                        <img src="../assets/UI/png/Group 90.svg" alt="" srcset="" />
                     </li>
                     <li v-bind:class="{ current: selectedMenu == 3, inactive: !finishAnnotation, }" v-on:click="
                 if (finishAnnotation) {
@@ -59,13 +59,13 @@
                   handleTabChange(selectedMenu);
                 }
               ">
-                        <img src="../assets/UI/svg/Group 89.svg" alt="" srcset="" />
+                        <img src="../assets/UI/png/Group 89.svg" alt="" srcset="" />
                     </li>
                     <li v-bind:class="{ current: selectedMenu == 4 }" v-on:click="
                 selectedMenu = 4;
                 handleTabChange(selectedMenu);
               ">
-                        <img src="../assets/UI/svg/Group 13.svg" alt="" srcset="" />
+                        <img src="../assets/UI/png/Group 13.svg" alt="" srcset="" />
                     </li>
                 </ul>
                 <div v-if="getTrainingType === 'None'" class="hint">

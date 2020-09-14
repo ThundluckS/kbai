@@ -5,7 +5,7 @@
         :is-full-page="fullPage"></loading>
         <div class="train-panel">
         <button class="btn btn-option train" @click="onTrain()"></button>
-        <button class="btn btn-option test" :disabled="!testable" @click="onTest">Test</button>
+        <button class="btn btn-option test" :disabled="!testable" @click="onTest"></button>
         <button class="btn btn-option submit" @click="exportToServer"></button>
       </div> 
 
@@ -184,6 +184,9 @@ export default {
     downloadable: function() {
       return this.isDone && !this.isDownloading;
     },
+    testable: function(){
+      return this.isDone;
+    },
   },
 };
 </script>
@@ -216,7 +219,7 @@ $primary-color: #007e4e;
   background-size: cover;
   margin-left: 30px !important;
   border-radius: 10px !important;
-  width: 330px;
+  width: 30%;
   height: 60px;
   cursor: pointer;
   &:disabled {

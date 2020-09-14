@@ -3,7 +3,6 @@
     <div class="d-flex w-100 h-100 outer-wrap">
         <div class="d-flex flex-fill flex-column main-panel" style="background-color:white;">
             <div class="d-flex flex-fill align-items-center justify-content-center">
-
                 <div class="row">
                     <b-col md="auto">
                         <div class="image-container">
@@ -954,7 +953,7 @@ body {
 .image-container {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: cal(100% - 180px);
 }
 
 .image-container .after {
