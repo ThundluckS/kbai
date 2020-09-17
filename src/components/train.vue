@@ -1,13 +1,19 @@
 <template>
-  <div style="height: 100vh; width: 100vw;">
-      <loading :active.sync="isLoading" 
-        :can-cancel="false" 
-        :is-full-page="fullPage"></loading>
-        <div class="train-panel">
-        <button class="btn btn-option train" @click="onTrain()"></button>
-        <button class="btn btn-option test" :disabled="!testable" @click="onTest"></button>
-        <button class="btn btn-option submit" @click="exportToServer"></button>
-      </div> 
+  <div style="height: 100vh; width: 100vw">
+    <loading
+      :active.sync="isLoading"
+      :can-cancel="false"
+      :is-full-page="fullPage"
+    ></loading>
+    <div class="train-panel">
+      <button class="btn btn-option train" @click="onTrain()"></button>
+      <button
+        class="btn btn-option test"
+        :disabled="!testable"
+        @click="onTest"
+      ></button>
+      <button class="btn btn-option submit" @click="exportToServer"></button>
+    </div>
 
     <b-card no-body class="train-pgr">
       <div class="bg-secondary text-light px-3 py-2 scroll-box" ref="logsBox">
@@ -15,35 +21,37 @@
         <div v-html="result" />
         <div v-html="logs" />
       </div>
-    </b-card> 
+    </b-card>
 
-  	 <b-modal id="test-result" size="xl" title="Detected image" ok-only ok-variant="secondary" ok-title="Dismiss" >
-			<img :src="imageData" />
-	 </b-modal>
-
-
+    <b-modal
+      id="test-result"
+      size="xl"
+      title="Detected image"
+      ok-only
+      ok-variant="secondary"
+      ok-title="Dismiss"
+    >
+      <img :src="imageData" />
+    </b-modal>
   </div>
-
-
-  
 </template>
 
 <script>
 import axios from "axios";
 import { mapGetters } from "vuex";
 
-import Loading from 'vue-loading-overlay';
+import Loading from "vue-loading-overlay";
 // Import stylesheet
-import 'vue-loading-overlay/dist/vue-loading.css';
+import "vue-loading-overlay/dist/vue-loading.css";
 
 var axiosInstance = axios.create({
-  baseURL: `${location.protocol}//${location.hostname}:80`,
+  baseURL: `${location.protocol}//${location.hostname}`,
 });
 
 export default {
   name: "Training",
   components: {
-    Loading
+    Loading,
   },
   props: {},
   created() {},
@@ -59,13 +67,13 @@ export default {
       isDone: false,
       isTraining: false,
       isDownloading: false,
-      imageData : null ,
+      imageData: null,
       showModal: false,
       isLoading: false,
       fullPage: true,
     };
   },
-  
+
   methods: {
     onCreate: () => {
       window.open(
@@ -73,7 +81,7 @@ export default {
         "_blank"
       );
     },
-    prepareData: function() {
+    prepareData: function () {
       this.result += `Preparing data ... <br />`;
       return axiosInstance.post(
         "/archiveFile",
@@ -86,78 +94,75 @@ export default {
         }
       );
     },
-    checkRunning: function() {
+    checkRunning: function () {
       return axios.get(`${this.url}/train/is_running`);
     },
-    stopTraining: function() {
+    stopTraining: function () {
       return axios.get(`${this.url}/train/stop`);
     },
-    getLogs: function() {
+    getLogs: function () {
       return axios.get(`${this.url}/train/log`);
-    },   
-    onTest:  function() {
-      console.log("Now loading!!!!")
+    },
+    onTest: function () {
+      console.log("Now loading!!!!");
       this.isLoading = true;
-            axiosInstance.post("/detect", {
-                projectpath: this.$store.state.projectDir,
-                filename : "1569404476961.png"
-            }).then((response) => {
-    
-      /*       let blob = new Blob(
+      axiosInstance
+        .post("/detect", {
+          projectpath: this.$store.state.projectDir,
+          filename: "1569404476961.png",
+        })
+        .then((response) => {
+          /*       let blob = new Blob(
         [response.data], 
         { type: response.headers['content-type'] }
       ) */
 
-            //const urlCreator = window.URL || window.webkitURL;
-            //var b64Response = btoa(unescape(encodeURIComponent(response.data)))
-            var str = response.data.ImageBytes        
-             
-            //this.imageData = url.createObjectURL(blob);
+          //const urlCreator = window.URL || window.webkitURL;
+          //var b64Response = btoa(unescape(encodeURIComponent(response.data)))
+          var str = response.data.ImageBytes;
+
+          //this.imageData = url.createObjectURL(blob);
 
           this.isLoading = false;
-              
-                var base64data = str;    
-                //this.imageData = base64data          
-                console.log(base64data);
-                   //console.log(this.imageData)
-                   this.imageData = 'data:image/png;base64,' + base64data;
-              console.log("get response")
-              this.showModal = true
-              this.$root.$emit('bv::show::modal', 'test-result')  
-                                
-            //this.imageData = 'data:image/png;base64,' + b64Response;
-            //this.imageData = urlCreator.createObjectURL(blob);
 
-            //console.log(this.imageData)
-       
-            //return this.imageData 
+          var base64data = str;
+          //this.imageData = base64data
+          console.log(base64data);
+          //console.log(this.imageData)
+          this.imageData = "data:image/png;base64," + base64data;
+          console.log("get response");
+          this.showModal = true;
+          this.$root.$emit("bv::show::modal", "test-result");
 
-            });
+          //this.imageData = 'data:image/png;base64,' + b64Response;
+          //this.imageData = urlCreator.createObjectURL(blob);
+
+          //console.log(this.imageData)
+
+          //return this.imageData
+        });
     },
-    onTrain: async function() {
+    onTrain: async function () {
       this.isLoading = true;
-            axiosInstance.post("/upload", {
-                projectpath: this.$store.state.projectDir
-            }).then((response) => {
-                console.log(response.data.status);
-                this.isDone = true
-                this.isLoading = false;
-                
-
-            });
+      axiosInstance
+        .post("/upload", {
+          projectpath: this.$store.state.projectDir,
+        })
+        .then((response) => {
+          console.log(response.data.status);
+          this.isDone = true;
+          this.isLoading = false;
+        });
     },
-    async exportToServer(){
-            window.open(
-                "https://sharebox.nstda.or.th/drive/group-public/G5f59ac09b6c50/home%2FOnlineTraining",
-                "_blank"
-            );
-        },
+    async exportToServer() {
+      window.open(
+        "https://sharebox.nstda.or.th/drive/group-public/G5f59ac09b6c50/home%2FOnlineTraining",
+        "_blank"
+      );
+    },
   },
   directives: {},
-  mounted() {
-      
-
-  },
+  mounted() {},
   updated() {
     var logsBox = this.$refs.logsBox;
     logsBox.scrollTop = logsBox.scrollHeight;
@@ -171,20 +176,19 @@ export default {
       "getCmdVel",
     ]),
 
-
-    trainable: function() {
+    trainable: function () {
       const regex = new RegExp(
         /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/
       );
       return this.url === "" || !regex.test(this.url) || this.loading;
     },
-    variantType: function() {
+    variantType: function () {
       return this.isTraining ? "primary" : "outline-primary";
     },
-    downloadable: function() {
+    downloadable: function () {
       return this.isDone && !this.isDownloading;
     },
-    testable: function(){
+    testable: function () {
       return this.isDone;
     },
   },
@@ -214,7 +218,7 @@ $primary-color: #007e4e;
   }
 }
 .btn-option {
-  color: white;  
+  color: white;
   background-position: center center;
   background-size: cover;
   margin-left: 30px !important;
@@ -223,7 +227,7 @@ $primary-color: #007e4e;
   height: 60px;
   cursor: pointer;
   &:disabled {
-    opacity: 0.5;    
+    opacity: 0.5;
   }
   &.train {
     background-image: url("../assets/UI/png/Group 41.png");
@@ -239,7 +243,7 @@ $primary-color: #007e4e;
   border: none !important;
 }
 .scroll-box {
-  height: calc( 100vh - 78px );
+  height: calc(100vh - 78px);
   overflow-y: scroll;
   text-align: left;
   padding: 20px !important;
