@@ -826,15 +826,15 @@ export default {
         handleTabChange(tabIndex) {
             console.log("Tabindex = " + tabIndex);
             // Because without using v-tab, Then index start with 1
-            if (tabIndex == 1 && this.loaded == false) {
+            if (tabIndex == 4 && this.loaded == false) {
                 this.isRunHiden = false;
             }
-            if (tabIndex == 1) {
+            if (tabIndex == 4) {
                 this.isRunHiden = true;
             } else {
                 this.isRunHiden = false;
             }
-            if (tabIndex == 3) {
+            if (tabIndex == 2) {
                 if (this.$store.getters.getTrainingType === 'Image classification') {
                     console.log("get all files Image classification" + this.$store.state.projectDir);
                     axiosInstance.post("/getFiles", {
@@ -920,7 +920,7 @@ export default {
                     });
                 }
             }
-            if (tabIndex == 2) {
+            if (tabIndex == 1) {
                 axiosInstance.post("/getFiles", {
                     path: this.$store.state.projectDir
                 }).then((response) => {
@@ -942,7 +942,7 @@ export default {
                     }
                 });
             }
-            if (tabIndex == 4) {
+            if (tabIndex == 3) {
                 this.$refs.trainLocalComponent.result = ""
                 if (this.$store.getters.getTrainingType === 'Image classification') {
                     axiosInstance.post("/createImclassDataset", {
