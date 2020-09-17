@@ -7,11 +7,7 @@
     ></loading>
     <div class="train-panel">
       <button class="btn btn-option train" @click="onTrain()"></button>
-      <button
-        class="btn btn-option test"
-        :disabled="!testable"
-        @click="onTest"
-      ></button>
+      <button class="btn btn-option test" @click="onTest"></button>
       <button class="btn btn-option submit" @click="exportToServer"></button>
     </div>
 
