@@ -85,13 +85,13 @@
         </div>
     </div>
 
-    <b-modal ref="class-modal" id="anotateDiaglog" title="Add a label" hide-footer>
+    <b-modal ref="class-modal" id="anotateDiaglog" title="ตั้งชื่อป้ายกำกับ" hide-footer>
         <b-form @submit="onSubmit" @reset="onReset">
             <b-container fluid class="bv-example-row">
                 <b-form-row class="mb-3">
                     <b-form-input id="input-2" v-model="form.name" required placeholder="Enter name"></b-form-input>
                 </b-form-row>
-                <p class="p-notice-color small">* เงื่อนไขการตั้งชื่อป้ายกำกับ</p>
+                <p class="p-notice-color small">* เงื่อนไขการตั้งชื่อป้ายกำกับ</p>                
                 <p class="p-notice-color small">
                     1.ตั้งชื่อด้วยตัวอักษรภาษาอังกฤษเท่านั้น เช่น a,b,c,A,B,C
                 </p>

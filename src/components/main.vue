@@ -372,9 +372,9 @@
             <b-dropdown id="dropdown-1" :text="
             getTrainingType !== 'None'
               ? getTrainingType
-              : 'Select trainning type'
+              : 'กรุณาเลือกประเภทการเรียนรู้'
           " class="mode-select">
-                <b-dropdown-item @click="handleSelect('Object detection')">Object detection</b-dropdown-item>
+                <b-dropdown-item @click="handleSelect('Object detection')">การตรวจจับวัตถุ(Object detection)</b-dropdown-item>
                 <!-- <b-dropdown-item @click="handleSelect('Image classification')">Image classification</b-dropdown-item> -->
             </b-dropdown>
             <b-form-group :state="nameState" label="Name" label-for="name-input" invalid-feedback="Name is required">
@@ -382,19 +382,20 @@
             </b-form-group>
             <p class="p-notice-color small">* เงื่อนไขการตั้งชื่อโปรเจค</p>
         <p class="p-notice-color small">1. ภาษาอังกฤษเท่านั้น</p>
+        <p class="p-notice-color small">2. ห้ามเว้นวรรค หากต้องการเว้นวรรคให้ใช้สัญลักษณ์ขีดล่าง _ แทน</p>
         <p class="p-notice-color small">
-          2. ตั้งชื่อตามรูปแบบดังต่อไปนี้ <br /><span class="p-color"
-            >ภาคตามด้วยรุ่นการอบรม_ชื่อโรงเรียน_ชื่อจริงของผู้เข้าอบรม</span
+          3. ตั้งชื่อตามรูปแบบดังต่อไปนี้ <br /><span class="p-color"
+            >ภาค_ชื่อโรงเรียน</span
           >
         </p>
         <p class="p-notice-color small">ตัวอย่างการตั้งชื่อ เช่น</p>
         <p class="p-notice-color small">
-          ภาคเหนือ อบรมรุ่นที่ 1 ชื่อโรงเรียน SchoolName ชื่อผู้เข้าอบรม
-          KidBright
+          ภาคเหนือ โรงเรียน SchoolName
         </p>
         <p class="p-notice-color small">
-          ตั้งชื่อโปรเจค: <span class="p-color">N1_SchoolName_KidBright</span>
-        </p>            
+          ตั้งชื่อโปรเจค: <span class="p-color">N_SchoolName</span>          
+        </p>
+        <p class="p-notice-color small">4. ตัวย่อชื่อภาค N=ภาคเหนือ S=ภาคใต้ C=ภาคกลาง E=ภาคตะวันออกเฉียงเหนือหรือภาคอีสาน</p>            
         </form>
     </b-modal>
 
@@ -405,28 +406,28 @@
         <b-dropdown id="dropdown-1" :text="
             getTrainingType !== 'None'
               ? getTrainingType
-              : 'Select trainning type'
+              : 'กรุณาเลือกประเภทการเรียนรู้'
           " class="mode-select">
             <b-dropdown-item @click="handleSelect('None')">None</b-dropdown-item>
-            <b-dropdown-item @click="handleSelect('Object detection')">Object detection</b-dropdown-item>
+            <b-dropdown-item @click="handleSelect('Object detection')">การตรวจจับวัตถุ(Object detection)</b-dropdown-item>
             <!-- <b-dropdown-item @click="handleSelect('Image classification')">Image classification</b-dropdown-item> -->
         </b-dropdown>
-        <p class="p-notice-color small">* กรุณาเลือกประเภทโปรเจค</p>
+        <p class="p-notice-color small">* กรุณาเลือกประเภทการเรียนรู้</p>
         <b-table show-empty striped hover stacked="md" caption-top selectable :select-mode="selectMode" selectedVariant="success" :items="projectsName" @row-selected="rowSelected" @row-clicked="rowClicked">
         </b-table>
     </b-modal>    
 
-    <b-modal id="gs_modal_list_files" ref="openModal" title="Import project from Google drive" @show="resetOpenModal" @hidden="resetOpenModal" @ok="gsImportProject">
+    <b-modal id="gs_modal_list_files" ref="openModal" title="นำเข้าข้อมูลจาก Google Drive" @show="resetOpenModal" @hidden="resetOpenModal" @ok="gsImportProject">
         <!--<div v-for="(item, index) in projectsName" :key="`fruit-${index}`">
             {{ item }}
         </div>-->
         <b-dropdown id="dropdown-1" :text="
             getTrainingType !== 'None'
               ? getTrainingType
-              : 'Select trainning type'
+              : 'กรุณาเลือกประเภทการเรียนรู้'
           " class="mode-select">
             <b-dropdown-item @click="handleSelect('None')">None</b-dropdown-item>
-            <b-dropdown-item @click="handleSelect('Object detection')">Object detection</b-dropdown-item>
+            <b-dropdown-item @click="handleSelect('Object detection')">การตรวจจับวัตถุ(Object detection)</b-dropdown-item>
             <!-- <b-dropdown-item @click="handleSelect('Image classification')">Image classification</b-dropdown-item> -->
         </b-dropdown>
         <b-table show-empty striped hover stacked="md" caption-top selectable :select-mode="selectMode" selectedVariant="success" :items="gsProjectsName" @row-selected="gsRowSelected" @row-clicked="gsRowClicked">
