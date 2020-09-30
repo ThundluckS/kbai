@@ -388,14 +388,12 @@
             >ภาค_ชื่อโรงเรียน</span
           >
         </p>
-        <p class="p-notice-color small">ตัวอย่างการตั้งชื่อ เช่น</p>
-        <p class="p-notice-color small">
-          ภาคเหนือ โรงเรียน SchoolName
-        </p>
+        <p class="p-notice-color small">ตัวอย่างการตั้งชื่อ เช่น ภาคเหนือ โรงเรียน SchoolName</p>        
         <p class="p-notice-color small">
           ตั้งชื่อโปรเจค: <span class="p-color">N_SchoolName</span>          
         </p>
-        <p class="p-notice-color small">4. ตัวย่อชื่อภาค N=ภาคเหนือ S=ภาคใต้ C=ภาคกลาง E=ภาคตะวันออกเฉียงเหนือหรือภาคอีสาน</p>            
+        <p class="p-notice-color small">4. ตัวย่อชื่อภาค </p>
+        <p class="p-notice-color small">ภาคเหนือ=N ภาคใต้=S ภาคกลาง=C ภาคตะวันออกเฉียงเหนือ/ภาคอีสาน=E</p>                 
         </form>
     </b-modal>
 
